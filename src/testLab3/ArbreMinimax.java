@@ -2,26 +2,11 @@ package testLab3;
 
 public class ArbreMinimax {
 
+	//TODO est-ce quon le met dans le generateur a la place (pour ordonee les feuilles)
 	private Evaluateur eval;
 	private Generateur gene;
 
-	/**
-	(* the minimax value of n, searched to depth d *)
-	 fun minimax(n: node, d: int): int =
-	   if leaf(n) or depth=0 return evaluate(n)
-	   if n is a max node
-	      v := L
-	      for each child of n
-	         v' := minimax (child,d-1)
-	         if v' > v, v:= v'
-	      return v
-	   if n is a min node
-	      v := W
-	      for each child of n
-	         v' := minimax (child,d-1)
-	         if v' < v, v:= v'
-	      return v
-	   **/
+
 	protected ArbreMinimax(Evaluateur eval, Generateur gene){
 		this.eval = eval;
 		this.gene = gene;
@@ -29,6 +14,8 @@ public class ArbreMinimax {
 	/**
 	 * Récursion sur les node pour généré les prochaine nodes (gene) avec leurs valeurs (eval)
 	 * jusqu'à une profondeur d
+	 * L'algo se fait en profondeur first pour atteindre les feuille du premier enfant et les evaluer
+	 * Le prunage se fera donc au fur et a mesure que lont creer larbre
 	 * @param node
 	 * @param d
 	 * @return value de la node
