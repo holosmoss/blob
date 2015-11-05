@@ -40,6 +40,9 @@ class Client {
                 boardValues = s.split(" ");
                 int x=0,y=0;
                 for(int i=0; i<boardValues.length;i++){
+                	/*
+                	 * TODO Doit creer un tableau des pions seulement
+                	 */
                     board[x][y] = Integer.parseInt(boardValues[i]);
                     x++;
                     if(x == 8){
@@ -49,6 +52,9 @@ class Client {
                 }
 
                 System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
+                /*
+                 * TODO Arbre give us a move
+                 */
                 String move = null;
                 move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
@@ -68,6 +74,9 @@ class Client {
                 boardValues = s.split(" ");
                 int x=0,y=0;
                 for(int i=0; i<boardValues.length;i++){
+                	/*
+                	 * TODO Doit creer un tableau des pions seulement
+                	 */
                     board[x][y] = Integer.parseInt(boardValues[i]);
                     x++;
                     if(x == 8){
@@ -89,7 +98,13 @@ class Client {
 				
 				String s = new String(aBuffer);
 				System.out.println("Dernier coup : "+ s);
+				/*
+				 * TODO updater le model complet et le model des pions seulement
+				 */
 		       	System.out.println("Entrez votre coup : ");
+		       	/*
+                 * TODO Arbre give us a move
+                 */
 				String move = null;
 				move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
