@@ -1,5 +1,7 @@
 package testLab3;
 
+import testLab3.Generateur.Node;
+
 public class ArbreMinimax {
 
 	//TODO est-ce quon le met dans le generateur a la place (pour ordonee les feuilles)
@@ -24,16 +26,4 @@ public class ArbreMinimax {
 		return 1;
 	}
 	
-	
-	/**
-	 * Node de l'arbre minimax
-	 * @author Holos
-	 *
-	 */ 
-	private class Node{
-		private Node(){
-			//TODO doit connaitre sont statut min ou max
-			//TODO doit connaitre le move qu'elle représente (changement) au board state
-		}
-	}
 }

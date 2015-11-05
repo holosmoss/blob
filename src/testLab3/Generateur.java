@@ -11,6 +11,22 @@ public class Generateur {
 	 * Il evalue tout les move possible selon la position et le type de la piece ainsi que les piece voisine
 	 */
 	
-	
+
+	/**
+	 * Node utilis/ par l<arbre min max
+	 * @author Holos
+	 *
+	 */ 
+	protected class Node{
+		private Node(){
+			//TODO doit connaitre sont statut min ou max
+			//TODO doit connaitre le move qu'elle représente (changement) au board state
+			//TODO is leaf:
+				//TODO info pour leval 
+				//manger un pousseur 
+				//bouger un pousseur a une place safe
+				//
+		}
+	}
 
 }
