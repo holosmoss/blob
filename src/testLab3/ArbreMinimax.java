@@ -42,7 +42,7 @@ public class ArbreMinimax {
 	 * Node de l'arbre minimax
 	 * @author Holos
 	 *
-	 */
+	 */ 
 	private class Node{
 		private Node(){
 			//TODO doit connaitre sont statut min ou max
