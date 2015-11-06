@@ -18,6 +18,7 @@ public class ArbreMinimax {
 	 * jusqu'à une profondeur d
 	 * L'algo se fait en profondeur first pour atteindre les feuille du premier enfant et les evaluer
 	 * Le prunage se fera donc au fur et a mesure que lont creer larbre
+	 * 
 	 * @param node
 	 * @param d
 	 * @return value de la node
