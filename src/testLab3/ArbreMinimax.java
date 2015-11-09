@@ -1,6 +1,8 @@
 package testLab3;
 
 
+import java.util.List;
+
 import testLab3.Generateur.Node;
 
 public class ArbreMinimax {
@@ -8,11 +10,13 @@ public class ArbreMinimax {
 	//TODO est-ce quon le met dans le generateur a la place (pour ordonee les feuilles)
 	private Evaluateur eval;
 	private Generateur gene;
-	private 
+	private long startTime;
+	private List<Node> nodeList;
 	
-
+	static final int MAX_DEPTH = 6; //profondeur de recherche max plus c'est grand
+									//plus c'est précis, mais prendra plus de temps
     static final int TEMPS_MAX = 4900; // temps max en millisecondes
-    static final int TEMPS_MARGE = 100; //on garde 100ms pour envoer le Move
+
 
     /*
      * Constructeur par defaut
@@ -27,25 +31,25 @@ public class ArbreMinimax {
     /**
      * 
      * @param board - l'état du board
-     * @param currentPlayer
-     * @param depth
-     * @param maxDepth
-     * @param alpha
+     * @param currentPlayer - true = current, false = enemy
+     * @param depth - profondeur de recherche max
+     * @param alpha 
      * @param beta
      * @return
      */
-    public int alphaBeta(Board board, boolean currentPlayer, int depth, int maxDepth, int alpha, int beta) {
-    	if ( /*calculer si temps de 4.5s dépassé*/ ) {
-            return 0;
-        } else if (depth >= maxDepth) {
-            return 0;//retourne de quoi si la prof. de recherche est trop big
+    public int alphaBeta(Node node, boolean currentPlayer, int depth, int alpha, int beta) {
+    	if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
+            return Integer.MIN_VALUE;
+        }
+    	if (depth <= 0) {
+            return node.move.score; // score associé au move de la node max ??
         }
 
-        List<Move> moveList = gene.getMoveList(); //TODO
+        this.nodeList = gene.getNoveList(); //TODO 
 
         if (currentPlayer) { // notre AI tente de maximiser le score
-            for (Move moveTemp : moveList) {
-                alpha = Math.max(alpha, alphaBeta(moveTemp, false, depth + 1, alpha, beta));
+            for (Node NodeTemp : nodeList) {
+                alpha = Math.max(alpha, alphaBeta(NodeTemp, false, depth - 1, alpha, beta));
 
                 if (beta <= alpha) {
                     break; // prune
@@ -53,8 +57,8 @@ public class ArbreMinimax {
             }
             return alpha;
         } else { // ennemi tente de minimiser le score
-            for (Move moveTemp : moveList) {
-                beta = Math.min(beta, alphaBeta(moveTemp, true, depth + 1, alpha, beta));
+            for (Node NodeTemp : nodeList) {
+                beta = Math.min(beta, alphaBeta(NodeTemp, true, depth - 1, alpha, beta));
                 if (beta <= alpha) {
                     break; // prune
                 }
@@ -64,13 +68,20 @@ public class ArbreMinimax {
     }
 	
 	/**
-	 * 
+	 * retourne le best move selon le score retourné par l'arbre
 	 * @return BestMove - le meilleur coup déterminer par l'arbre minMaxAlphaBeta
 	 */
-	public Move getBestMove(){
+	public Move getBestMove(Node node){
+		
+		int best;
+		this.startTime = System.currentTimeMillis();
+	
+		
+		best = alphaBeta(node, true, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		
 		Move bestMove = new Move(); //move vide
 		
-		
+		//TODO bestMove = la node qui a scoré le plus...
 		
 		
 		return bestMove;
