@@ -25,6 +25,7 @@ public class Evaluateur {
 		//retourne un move aléatoire de la liste fourni par le générateur
 		bestMove = moveList.get( randomNumberWithRange(1, moveList.size() ) );
 		
+		//décode le move aléatoire en String from to ex: A2A3
 		from = bestMove.getMoveCoordinate(bestMove.getFromRow(), bestMove.getFromColumn() );
 		to = bestMove.getMoveCoordinate(bestMove.getToRow(), bestMove.getToColumn() );
 		
