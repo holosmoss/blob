@@ -96,58 +96,58 @@ public class Generateur {
 				//diag first since they might be eating				
 				
 				//diag à droite xmod = 1
-				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, 1)){
+				if(canPusherMoveDiag(piece.getCol(), piece.getRow(), couleur, 1)){
 					
-					Move diagPlus = new Move(piece.getX(),
-											 piece.getX(),
-											 piece.getX()+1,
-											 piece.getY()-1 );
+					Move diagPlus = new Move(piece.getRow(),
+											 piece.getCol(),
+											 piece.getRow()-1,
+											 piece.getCol()+1 );
 					moves.add(diagPlus);
 				}
 				//diag à gauche xmod = -1
-				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, -1)){
+				if(canPusherMoveDiag(piece.getCol(), piece.getRow(), couleur, -1)){
 					
-					Move diagMinus = new Move(piece.getX(),
-							 				  piece.getX(),
-							 				  piece.getX()-1,
-							 				  piece.getY()-1 );
+					Move diagMinus = new Move(piece.getRow(),
+							 				  piece.getCol(),
+							 				  piece.getRow()-1,
+							 				  piece.getCol()+1 );
 					moves.add(diagMinus);
 				}
-				if(!isBlocked(piece.getX(), piece.getY(), couleur)){
+				if(!isBlocked(piece.getCol(), piece.getRow(), couleur)){
 					//we are not blocked forward, add the node X + 0, Y - 1
-					Move forward = new Move(piece.getX(),
-			 				  				piece.getX(),
-			 				  				piece.getX(),
-			 				  				piece.getY()-1 );
+					Move forward = new Move(piece.getRow(),
+			 				  				piece.getCol(),
+			 				  				piece.getRow()-1,
+			 				  				piece.getCol() );
 					moves.add(forward);
 				}
 			}
 			else{
 				//pushy amis
 				
-				if(canBePush(piece.getX(), piece.getY(), couleur, 1)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, 1)){
 					
-					Move diagPlus = new Move(piece.getX(),
-							 				 piece.getX(),
-							 				 piece.getX()+1,
-							 				 piece.getY()-1 );
+					Move diagPlus = new Move(piece.getRow(),
+							 				 piece.getCol(),
+							 				 piece.getRow()-1,
+							 				 piece.getCol()+1 );
 					
 					moves.add(diagPlus);
 				}
-				if(canBePush(piece.getX(), piece.getY(), couleur, -1)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, -1)){
 					
-					Move diagMinus = new Move(piece.getX(),
-											  piece.getX(),
-											  piece.getX()-1,
-											  piece.getY()-1 );
+					Move diagMinus = new Move(piece.getRow(),
+											  piece.getCol(),
+											  piece.getRow()-1,
+											  piece.getCol()+1 );
 					moves.add(diagMinus);
 				}
-				if(canBePush(piece.getX(), piece.getY(), couleur, 0)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, 0)){
 					//forward is a possible move
-					Move forward = new Move(piece.getX(),
-				  							piece.getX(),
-				  							piece.getX(),
-				  							piece.getY()-1 );
+					Move forward = new Move(piece.getRow(),
+				  							piece.getCol(),
+				  							piece.getRow()-1,
+				  							piece.getCol() );
 					moves.add(forward);
 				}
 			}
@@ -162,64 +162,64 @@ public class Generateur {
 		List<Move> moves = new ArrayList<Move> ();
 		//loop all of them and find moves for leurPushy et leurPusher
 		for(Piece piece : them){
-			if(piece.getValeur() == nosPusher){
+			if(piece.getValeur() == leurPusher){
 				
 				//add the moves in order of importance: 
 				//diag first since they might be eating				
 				
 				//diag à droite xmod = 1
-				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, 1)){
+				if(canPusherMoveDiag(piece.getCol(), piece.getRow(), couleur, 1)){
 					
-					Move diagPlus = new Move(piece.getX(),
-											 piece.getX(),
-											 piece.getX()+1,
-											 piece.getY()-1 );
+					Move diagPlus = new Move(piece.getRow(),
+											 piece.getCol(),
+											 piece.getRow()+1,
+											 piece.getCol()+1 );
 					moves.add(diagPlus);
 				}
 				//diag à gauche xmod = -1
-				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, -1)){
+				if(canPusherMoveDiag(piece.getCol(), piece.getRow(), couleur, -1)){
 					
-					Move diagMinus = new Move(piece.getX(),
-							 				  piece.getX(),
-							 				  piece.getX()-1,
-							 				  piece.getY()-1 );
+					Move diagMinus = new Move(piece.getRow(),
+							 				  piece.getCol(),
+							 				  piece.getRow()+1,
+							 				  piece.getCol()+1 );
 					moves.add(diagMinus);
 				}
-				if(!isBlocked(piece.getX(), piece.getY(), couleur)){
-					//we are not blocked forward, add the node X + 0, Y - 1
-					Move forward = new Move(piece.getX(),
-			 				  				piece.getX(),
-			 				  				piece.getX(),
-			 				  				piece.getY()-1 );
+				if(!isBlocked(piece.getCol(), piece.getRow(), couleur)){
+					//we are not blocked forward, add the node X + 0, Y + 1
+					Move forward = new Move(piece.getRow(),
+			 				  				piece.getCol(),
+			 				  				piece.getRow()+1,
+			 				  				piece.getCol() );
 					moves.add(forward);
 				}
 			}
 			else{
 				//pushy ennemi
 				
-				if(canBePush(piece.getX(), piece.getY(), couleur, 1)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, 1)){
 					
-					Move diagPlus = new Move(piece.getX(),
-							 				 piece.getX(),
-							 				 piece.getX()+1,
-							 				 piece.getY()-1 );
+					Move diagPlus = new Move(piece.getRow(),
+							 				 piece.getCol(),
+							 				 piece.getRow()+1,
+							 				 piece.getCol()+1 );
 					
 					moves.add(diagPlus);
 				}
-				if(canBePush(piece.getX(), piece.getY(), couleur, -1)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, -1)){
 					
-					Move diagMinus = new Move(piece.getX(),
-											  piece.getX(),
-											  piece.getX()-1,
-											  piece.getY()-1 );
+					Move diagMinus = new Move(piece.getRow(),
+											  piece.getCol(),
+											  piece.getRow()+1,
+											  piece.getCol()+1 );
 					moves.add(diagMinus);
 				}
-				if(canBePush(piece.getX(), piece.getY(), couleur, 0)){
+				if(canBePush(piece.getCol(), piece.getRow(), couleur, 0)){
 					//forward is a possible move
-					Move forward = new Move(piece.getX(),
-				  							piece.getX(),
-				  							piece.getX(),
-				  							piece.getY()-1 );
+					Move forward = new Move(piece.getRow(),
+				  							piece.getCol(),
+				  							piece.getRow()+1,
+				  							piece.getCol() );
 					moves.add(forward);
 				}
 			}
@@ -255,11 +255,7 @@ public class Generateur {
 	private boolean canPusherMoveDiag(int x, int y, int color, int xmod){
 		if(color == WHITE){
 			//si xmod = 1 check diag gauche, si -1 x--1 = x+1 alors diag droite
-			if(Client.board[x-xmod][y-1] == 3 || 
-			   Client.board[x-xmod][y-1] == 4 ||
-			   (x-xmod) < 0 || 
-			   (x-xmod) > 7
-			   ){
+			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4){
 				//pas de pièces à nous dans la prochain case et
 				//check si on sort pas du board
 				return false;
@@ -270,11 +266,7 @@ public class Generateur {
 			
 		}else{
 			
-			if(Client.board[x-xmod][y+1] == 1 || 
-			   Client.board[x-xmod][y+1] == 2 ||
-			   (x-xmod) < 0 || 
-			   (x-xmod) > 7 
-			   ){
+			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2){
 				return false;
 			}else{
 				//true si vide ou si ennemi alors on mange
@@ -298,10 +290,10 @@ public class Generateur {
 		//is the pushy able to go to x+xmod
 		if(color == WHITE){
 			//white pushy
-			if(Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4 ){
+			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4 ){
 				//is blocked by one of its color
 				return false;
-			}else if(Client.board[x+xmod][y-1] == 4){
+			}else if( isOutOfBound(x, xmod) || Client.board[x+xmod][y+1] == 4){
 				//has a pusher to push to xModified -1y
 				return true;
 			}else{
@@ -309,10 +301,10 @@ public class Generateur {
 			}
 		}else{
 			//Black pushy
-			if(Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2 ){
+			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2 ){
 				//is blocked by one of its color
 				return false;
-			}else if(Client.board[x+xmod][y+1] == 2){
+			}else if( isOutOfBound(x, xmod) || Client.board[x+xmod][y-1] == 2){
 				//has a pusher to push to xModified +1y
 				return true;
 			}else{
@@ -320,4 +312,25 @@ public class Generateur {
 			}
 		}
 	}
+	
+	/**
+	 * Methode pour vérifier si on tente de déplacer un pion en dehors du board
+	 * @param x - valeur en X original
+	 * @param xmod - valeur en X de destination
+	 * @return
+	 */
+	private boolean isOutOfBound(int x, int xmod){
+		if(x-xmod < 0)
+			return true;
+		else if(x+xmod < 0)
+			return true;
+		else if(x-xmod > 7)
+			return true;
+		else if(x+xmod > 7)
+			return true;
+		else
+			return false;
+		
+	}
+
 }

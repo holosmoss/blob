@@ -72,7 +72,7 @@ class Client {
 	                
 	                game = new PusherGame(color, whites, blacks);
 	                
-	                move = game.getEval().chooseMove();
+	                move = game.chooseMove();
 	
 	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 	               

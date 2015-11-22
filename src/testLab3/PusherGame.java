@@ -25,7 +25,9 @@ public class PusherGame {
 		return this.eval;
 	}
 
-    
+    public String chooseMove(){
+    	return this.eval.chooseMove();    	
+    }
     
 
 }

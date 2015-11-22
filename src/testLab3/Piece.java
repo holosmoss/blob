@@ -18,8 +18,8 @@ public class Piece {
     /**
      * Constructeur
      * @param valeur - type de la pièce et couleur 
-     * @param x - coordonnée en X du tableau int[X][Y]
-     * @param y - coordonnée en Y du tableau int[X][Y]
+     * @param x - coordonnée en X du tableau int[X][Y] X = col
+     * @param y - coordonnée en Y du tableau int[X][Y] Y = row
      */
 	public Piece(int valeur, int x, int y){
     	this.valeur = valeur;    	
@@ -31,12 +31,12 @@ public class Piece {
 		return valeur;
 	}
     
-	public int getX() {
+	public int getCol() {
 		return x;
 	}
 
 
-	public int getY() {
+	public int getRow() {
 		return y;
 	}
     
