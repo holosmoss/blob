@@ -320,36 +320,4 @@ public class Generateur {
 			}
 		}
 	}
-	
-
-	
-		
-	/**
-	 * Node utilisé par l'arbre min max
-	 * @author Holos
-	 *
-	 */ 
-	protected class Node{
-		
-
-		
-		protected boolean isMax;
-		protected int typeMove;
-		protected Move moveAssociatedToTheNode;
-		
-		
-		protected Node(int typeMove){
-			
-			this.typeMove = typeMove;
-			
-			//classe useless a ce moment la du jeu
-		}
-		
-		protected Node(){
-			
-		}
-		
-		
-	}
-
 }
