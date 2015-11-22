@@ -42,14 +42,14 @@ public class ArbreMinimax {
             return Integer.MIN_VALUE;
         }
     	if (depth <= 0) {
-            return node.move.score; // score associé au move de la node max ??
+//            return node.move.score; // score associé au move de la node max ??
         }
 
-        this.nodeList = gene.getNoveList(); //TODO 
+        this.nodeList = gene.getNodeList(); //TODO 
 
         if (currentPlayer) { // notre AI tente de maximiser le score
             for (Node NodeTemp : nodeList) {
-                alpha = Math.max(alpha, alphaBeta(NodeTemp, false, depth - 1, alpha, beta));
+                alpha = Math.max(alpha, alphaBeta(NodeTemp, false, depth - 1, alpha, beta) );
 
                 if (beta <= alpha) {
                     break; // prune

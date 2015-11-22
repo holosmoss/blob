@@ -8,14 +8,22 @@ import java.util.ArrayList;
 class Client {
 	static int color;
 	static int enemyColor;
-    static ArrayList<int[]> whites = new ArrayList<int[]>();
-    static ArrayList<int[]> blacks = new ArrayList<int[]>();
+	
+	//liste de tableau correspondant aux pièces
+    static ArrayList<Piece> whites = new ArrayList<Piece>();
+    static ArrayList<Piece> blacks = new ArrayList<Piece>();
+    
     static int[][] board = new int[8][8];
+    
+    static PusherGame game;
+    
+
     
 	public static void main(String[] args) {
 		Socket MyClient;
 		BufferedInputStream input;
 		BufferedOutputStream output;
+		String move;
 		try {
 			MyClient = new Socket("localhost", 8888);
 		   	input    = new BufferedInputStream(MyClient.getInputStream());
@@ -38,18 +46,22 @@ class Client {
 					//System.out.println("size " + size);
 					input.read(aBuffer,0,size);
 	                String s = new String(aBuffer).trim();
-	                System.out.println(s);
+	                //System.out.println(s);
 	                String[] boardValues;
 	                boardValues = s.split(" ");
 	                int x=0,y=0;
+	                int value;
+	                
+	                //on lit toutes les cases du board envoyé par le server
+	                // 1 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 etc ...
 	                for(int i=0; i<boardValues.length;i++){
-	                	/*
-	                	 * TODO Doit creer un tableau des pions seulement
-	                	 */
-	                	int value = Integer.parseInt(boardValues[i]);
+
+	                	value = Integer.parseInt(boardValues[i]);
 	                    board[x][y] = value;
+	                    
+	                    //si la case n'est pas vide, ajoute la pièce
 	                    if(value != 0 ){
-	                    	dispatchPawns(x,y,value);
+	                    	dispatchPieces(x,y,value);
 	                    }
 	                    x++;
 	                    if(x == 8){
@@ -57,16 +69,21 @@ class Client {
 	                        y++;
 	                    }
 	                }
+	                
+	                game = new PusherGame(color, whites, blacks);
+	                
+	                move = game.getEval().chooseMove();
 	
 	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
-	                /*
-	                 * TODO Arbre give us a move
-	                 */
-	                String move = null;
-	                move = console.readLine();
+	               
+
+	                
+	                //move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
+					System.out.println(move);
 	            }
+	            
 	            // Début de la partie en joueur Noir
 	            if(cmd == '2'){
 	                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
@@ -82,14 +99,14 @@ class Client {
 	                String[] boardValues;
 	                boardValues = s.split(" ");
 	                int x=0,y=0;
+	                
+	                //même histoire avec les pions noirs, voir blanc plus haut pour détail
 	                for(int i=0; i<boardValues.length;i++){
-	                	/*
-	                	 * TODO Doit creer un tableau des pions seulement
-	                	 */
+	                	
 	                	int value = Integer.parseInt(boardValues[i]);
 	                    board[x][y] = value;
 	                    if(value != 0 ){
-	                    	dispatchPawns(x,y,value);
+	                    	dispatchPieces(x,y,value);
 	                    }
 	                    x++;
 	                    if(x == 8){
@@ -97,6 +114,9 @@ class Client {
 	                        y++;
 	                    }
 	                }
+	                
+	                game = new PusherGame(color, whites, blacks);
+	                //game.;
 	            }
 	
 	
@@ -119,7 +139,7 @@ class Client {
 			       	/*
 	                 * TODO Arbre give us a move
 	                 */
-					String move = null;
+					
 					move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
@@ -128,7 +148,7 @@ class Client {
 				// Le dernier coup est invalide
 				if(cmd == '4'){
 					System.out.println("Coup invalide, entrez un nouveau coup : ");
-			       	String move = null;
+			       	
 					move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
@@ -141,15 +161,24 @@ class Client {
 		}
 	
     }
-	private static void dispatchPawns(int x, int y, int val){
-		int[] coord = new int[3];
-    	coord[0] = x;
-    	coord[1] = y;
-    	coord[2] = val;
-		if(val == 1 || val ==2){
-			whites.add(coord);
+	
+	/**
+	 * fonction qui rempli la liste de tableau de pièces
+	 * chaque pièces est décrite avec une coordonné X Y et une
+	 * valeur correspondante à sa couleur et type de pièces
+	 * 3 = pushy blanc, 4 = pousseur blanc, le reste est noir
+	 * @param x
+	 * @param y
+	 * @param val
+	 */
+	private static void dispatchPieces(int x, int y, int val){
+		
+		Piece piece = new Piece(val, x, y);
+
+		if(val == 3 || val == 4){
+			whites.add(piece);
 		}else{
-			blacks.add(coord);
+			blacks.add(piece);
 		}
 	}
 }

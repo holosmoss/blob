@@ -5,131 +5,244 @@ import java.util.List;
 
 public class Generateur {
 	
-	//pour vérifier si le dernier coup était valide
-	private int[][] boardAvant = new int[8][8];	
-	private int[][] boardApres = new int[8][8];
-	private int nosPou;
-	private int nosPeu;
-	private int leurPou;
-	private int leurPeu;
-	//TODO do we get a reference of this via the ArbeMinimax ? or is client singleton
-	protected ArrayList<int[]> us = new ArrayList<int[]>();
-	protected ArrayList<int[]> them = new ArrayList<int[]>();
+	//les types de moves qu'une node peut faire
+	static final int MOVE_FORWARD = 1;
+	static final int MOVE_DIAG = 2;
+	static final int MOVE_EAT = 3;
+	
+	//valeur des couleurs des joueurs
+	static final int WHITE = 1;
+	static final int BLACK = 2;
+
+	private int nosPushy;
+	private int nosPusher;
+	private int leurPushy;
+	private int leurPusher;
+	
+	//couleur du joueur
+	private int clientColor;
+	
+	//liste des moves des deux joueurs, cette liste est rempli dans le main
+	// avec dispatchPieces()
+	private ArrayList<Piece> us = new ArrayList<Piece>();
+	private ArrayList<Piece> them = new ArrayList<Piece>();
+
+	
+	
 	/**
 	 * Le generateur est appelé par l'arbre pour connaitre les enfants de  la node
-	 * Il evalue tout les move possible selon la position et le type de la piece ainsi que les piece voisine
+	 * Il evalue tout les move possible selon la position et le type de la piece ainsi que les pieces voisines
 	 */
-	public Generateur(){
-		if(Client.color == 1){
-			us = Client.whites;
-			them = Client.blacks;
-			leurPou = 3;
-			leurPeu = 4;
-			nosPou = 1;
-			nosPeu = 2;
-		}else{
-			us = Client.blacks;
-			them = Client.whites;
-			leurPou = 1;
-			leurPeu = 2;
-			nosPou = 3;
-			nosPeu = 4;
+	public Generateur(int clientColor, ArrayList<Piece> white, ArrayList<Piece> black ){
+		
+		this.clientColor = clientColor;
+		
+		if(clientColor == WHITE){
+			this.us = white;
+			this.them = black;
+			this.leurPushy = 1;
+			this.leurPusher = 2;
+			this.nosPushy = 3;
+			this.nosPusher = 4;
+		}
+		else{
+			this.us = black;
+			this.them = white;
+			this.leurPushy = 3;
+			this.leurPusher = 4;
+			this.nosPushy = 1;
+			this.nosPusher = 2;
 		}	
 	}
-	protected List<Node>  procreate(Node node){
-		List<Node> childList;
-		//for our node ( parent boardState with our move added) we look all possibles moves for each pawns
-		//TODO find a way to get a proper updated board state (with eating etc)
-		if(node.isMax){
-			childList = ourMoves();
-		}else{
-			childList = theirMoves();
+	
+	/*
+	 * Une fois le generateur créé et le premier coup joué, on utilisera
+	 * cette methode pour update les liste de pièces
+	 */
+	public void updatePlayerPiecesList(ArrayList<Piece> white, ArrayList<Piece> black){
+		if(this.clientColor == WHITE){
+			this.us = white;
+			this.them = black;
+		}
+		else{
+			this.us = black;
+			this.them = white;
 		}
 		
-		//TODO we need to check every peon positions
-		//^? really all of them, how could we diminish the amount needed ?
-			//??is the board state actually juste the list of peons and their position
-			//! we record the move only, and if this node is the one being used for children we imprint the next board state
-			//Childrens use their parent board state to evaluate the moves
-			//??? how to minimize the amount of childrens repetitions ? checksum du boardstate in a hashmap ?
-				//TODO for every peon (in order of importance =  our strategy)
-			//TODO find evry possible moves of its 3
-			//return them as nodes
-		return childList;
 	}
-	private List<Node> ourMoves(){
-		List<Node> moves = new ArrayList<Node> ();
-		//loop all of us and find moves for nosPou et nosPeu
-		for(int[] coord : us){
-			if(coord[2] == nosPeu){
-				//pousseur amis
-				//add the nodes in order of importance: diag first since they might be eating
-				//TODO fill in the details of each nodes
-				if(canPeuDiag(coord[0], coord[1], Client.color, 1)){
-					//TODO check for eatings
-					Node diagPlus = new Node();
+	
+	public List<Move>  generateurMouvement(int couleur){
+		List<Move> listMove;
+
+		if(couleur == WHITE){
+			listMove = ourMoves(couleur);
+		}else{
+			listMove = theirMoves(couleur);
+		}
+		
+		return listMove;
+	}
+	
+
+	
+	private List<Move> ourMoves(int couleur){
+		List<Move> moves = new ArrayList<Move> ();
+		
+		//loop all of us and find moves for nosPushy et nosPusher
+		for(Piece piece : us){
+			if(piece.getValeur() == nosPusher){
+				
+				//add the moves in order of importance: 
+				//diag first since they might be eating				
+				
+				//diag à droite xmod = 1
+				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, 1)){
+					
+					Move diagPlus = new Move(piece.getX(),
+											 piece.getX(),
+											 piece.getX()+1,
+											 piece.getY()-1 );
 					moves.add(diagPlus);
 				}
-				if(canPeuDiag(coord[0], coord[1], Client.color, -1)){
-					//TODO check for eatings
-					Node diagMinus = new Node();
+				//diag à gauche xmod = -1
+				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, -1)){
+					
+					Move diagMinus = new Move(piece.getX(),
+							 				  piece.getX(),
+							 				  piece.getX()-1,
+							 				  piece.getY()-1 );
 					moves.add(diagMinus);
 				}
-				if(!isBlocked(coord[0], coord[1], Client.color)){
-					//we are not blocked forward, add the node
-					Node forward = new Node();
+				if(!isBlocked(piece.getX(), piece.getY(), couleur)){
+					//we are not blocked forward, add the node X + 0, Y - 1
+					Move forward = new Move(piece.getX(),
+			 				  				piece.getX(),
+			 				  				piece.getX(),
+			 				  				piece.getY()-1 );
 					moves.add(forward);
 				}
-			}else{
-				//poussable amis
-				//add the nodes in order of importance: diag first since they might be eating
-				if(canPou(coord[0], coord[1], Client.color, 1)){
-					//TODO check for eatings
-					Node diagPlus = new Node();
+			}
+			else{
+				//pushy amis
+				
+				if(canBePush(piece.getX(), piece.getY(), couleur, 1)){
+					
+					Move diagPlus = new Move(piece.getX(),
+							 				 piece.getX(),
+							 				 piece.getX()+1,
+							 				 piece.getY()-1 );
+					
 					moves.add(diagPlus);
 				}
-				if(canPou(coord[0], coord[1], Client.color, -1)){
-					//TODO check for eatings
-					Node diagMinus = new Node();
+				if(canBePush(piece.getX(), piece.getY(), couleur, -1)){
+					
+					Move diagMinus = new Move(piece.getX(),
+											  piece.getX(),
+											  piece.getX()-1,
+											  piece.getY()-1 );
 					moves.add(diagMinus);
 				}
-				if(canPou(coord[0], coord[1], Client.color, 0)){
+				if(canBePush(piece.getX(), piece.getY(), couleur, 0)){
 					//forward is a possible move
-					Node forward = new Node();
+					Move forward = new Move(piece.getX(),
+				  							piece.getX(),
+				  							piece.getX(),
+				  							piece.getY()-1 );
 					moves.add(forward);
 				}
-				//TODO use the boardState to check other pieces
-				//if pousseur in places check for moves acordin to the places (-1,0,+1)
 			}
 		}
 		return moves;
 	}
-	private List<Node> theirMoves(){
-		List<Node> moves = new ArrayList<Node> ();
-		//loop all of them and find moves for leurPou et leurPeu
-		for(int[] coord : them){
-			if(coord[2] == leurPeu){
-				//pousseur enemis
-			}else{
-				//poussable enemis
+	
+	/*
+	 * Pour les moves de l'adversaire
+	 */
+	private List<Move> theirMoves(int couleur){
+		List<Move> moves = new ArrayList<Move> ();
+		//loop all of them and find moves for leurPushy et leurPusher
+		for(Piece piece : them){
+			if(piece.getValeur() == nosPusher){
+				
+				//add the moves in order of importance: 
+				//diag first since they might be eating				
+				
+				//diag à droite xmod = 1
+				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, 1)){
+					
+					Move diagPlus = new Move(piece.getX(),
+											 piece.getX(),
+											 piece.getX()+1,
+											 piece.getY()-1 );
+					moves.add(diagPlus);
+				}
+				//diag à gauche xmod = -1
+				if(canPusherMoveDiag(piece.getX(), piece.getY(), couleur, -1)){
+					
+					Move diagMinus = new Move(piece.getX(),
+							 				  piece.getX(),
+							 				  piece.getX()-1,
+							 				  piece.getY()-1 );
+					moves.add(diagMinus);
+				}
+				if(!isBlocked(piece.getX(), piece.getY(), couleur)){
+					//we are not blocked forward, add the node X + 0, Y - 1
+					Move forward = new Move(piece.getX(),
+			 				  				piece.getX(),
+			 				  				piece.getX(),
+			 				  				piece.getY()-1 );
+					moves.add(forward);
+				}
+			}
+			else{
+				//pushy ennemi
+				
+				if(canBePush(piece.getX(), piece.getY(), couleur, 1)){
+					
+					Move diagPlus = new Move(piece.getX(),
+							 				 piece.getX(),
+							 				 piece.getX()+1,
+							 				 piece.getY()-1 );
+					
+					moves.add(diagPlus);
+				}
+				if(canBePush(piece.getX(), piece.getY(), couleur, -1)){
+					
+					Move diagMinus = new Move(piece.getX(),
+											  piece.getX(),
+											  piece.getX()-1,
+											  piece.getY()-1 );
+					moves.add(diagMinus);
+				}
+				if(canBePush(piece.getX(), piece.getY(), couleur, 0)){
+					//forward is a possible move
+					Move forward = new Move(piece.getX(),
+				  							piece.getX(),
+				  							piece.getX(),
+				  							piece.getY()-1 );
+					moves.add(forward);
+				}
 			}
 		}
 		return moves;
 	}
 	/**
-	 * Function to check for any pawns straight ahead (works for both pou and peu)
+	 * Function to check for any pieces straight 
+	 * ahead (works for both pushy and pusher)
+	 * 
 	 * @param x
 	 * @param y
-	 * @return
+	 * @return true if blocked, false if not
 	 */
-	private boolean isBlocked(int x, int y,int color){
+	private boolean isBlocked(int x, int y, int color){
 		//change the row modifier based on color
-		int ymod = (color == 1) ? 1 : -1;
-		if(Client.board[x][y+ymod] != 0){
-			//si il y a un piont en avant de nous
+		int ymod = (color == WHITE) ? 1 : -1;
+		if(Client.board[x][y-ymod] != 0){
+			//s'il y a un pion en avant de nous
 			return true;
 		}
-		return false;
+		else
+			return false;
 	}
 	/**
 	 * 
@@ -139,19 +252,32 @@ public class Generateur {
 	 * @param xmod -1,1 = the location of the diag we want to go to
 	 * @return
 	 */
-	private boolean canPeuDiag(int x, int y, int color, int xmod){
-		if(color == 1){
-			if(Client.board[x-xmod][y-1] == 1 || Client.board[x-xmod][y-1] == 2 ){
-				//no pawns of our color at target location
+	private boolean canPusherMoveDiag(int x, int y, int color, int xmod){
+		if(color == WHITE){
+			//si xmod = 1 check diag gauche, si -1 x--1 = x+1 alors diag droite
+			if(Client.board[x-xmod][y-1] == 3 || 
+			   Client.board[x-xmod][y-1] == 4 ||
+			   (x-xmod) < 0 || 
+			   (x-xmod) > 7
+			   ){
+				//pas de pièces à nous dans la prochain case et
+				//check si on sort pas du board
 				return false;
 			}else{
+				//true si vide ou si ennemi alors on mange
 				return true;
 			}
+			
 		}else{
-			if(Client.board[x-xmod][y+1] == 3 || Client.board[x-xmod][y+1] == 4 ){
-				//no pawns of our color at target location
+			
+			if(Client.board[x-xmod][y+1] == 1 || 
+			   Client.board[x-xmod][y+1] == 2 ||
+			   (x-xmod) < 0 || 
+			   (x-xmod) > 7 
+			   ){
 				return false;
 			}else{
+				//true si vide ou si ennemi alors on mange
 				return true;
 			}
 		}
@@ -159,7 +285,7 @@ public class Generateur {
 		
 	}
 	/**
-	 * Function to detect the pou as a peu in the proper position to move hime to the desired xmod 
+	 * Function to detect if the pushy has a pusher in the proper position to move him to the desired xmod 
 	 * on the next row based on colors. Also confirms its not blocked by its own color
 	 * 
 	 * @param x
@@ -168,26 +294,26 @@ public class Generateur {
 	 * @param xmod : 0 = straight ahead, -1 and 1 = diagonals (the value is for the location we want to go)
 	 * @return
 	 */
-	private boolean canPou(int x, int y, int color,int xmod){
-		//is the pou able to go to x+xmod
-		if(color == 1){
-			//white pou
-			if(Client.board[x-xmod][y-1] == 1 || Client.board[x-xmod][y-1] == 2 ){
+	private boolean canBePush(int x, int y, int color, int xmod){
+		//is the pushy able to go to x+xmod
+		if(color == WHITE){
+			//white pushy
+			if(Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4 ){
 				//is blocked by one of its color
 				return false;
-			}else if(Client.board[x+xmod][y-1] == 2){
-				//as a peu to push to xModified +1y
+			}else if(Client.board[x+xmod][y-1] == 4){
+				//has a pusher to push to xModified -1y
 				return true;
 			}else{
 				return false;
 			}
 		}else{
-			//Black pou
-			if(Client.board[x-xmod][y+1] == 3 || Client.board[x-xmod][y+1] == 4 ){
+			//Black pushy
+			if(Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2 ){
 				//is blocked by one of its color
 				return false;
-			}else if(Client.board[x+xmod][y+1] == 4){
-				//as a peu to push to xModified -1y
+			}else if(Client.board[x+xmod][y+1] == 2){
+				//has a pusher to push to xModified +1y
 				return true;
 			}else{
 				return false;
@@ -195,22 +321,35 @@ public class Generateur {
 		}
 	}
 	
+
+	
+		
 	/**
-	 * Node utilis/ par l<arbre min max
+	 * Node utilisé par l'arbre min max
 	 * @author Holos
 	 *
 	 */ 
 	protected class Node{
+		
+
+		
 		protected boolean isMax;
-		private Node(){
-			//TODO doit connaitre sont statut min ou max
-			//TODO doit connaitre le move qu'elle représente (changement) au board state
-			//TODO is leaf:
-				//TODO info pour leval 
-				//manger un pousseur 
-				//bouger un pousseur a une place safe
-				//
+		protected int typeMove;
+		protected Move moveAssociatedToTheNode;
+		
+		
+		protected Node(int typeMove){
+			
+			this.typeMove = typeMove;
+			
+			//classe useless a ce moment la du jeu
 		}
+		
+		protected Node(){
+			
+		}
+		
+		
 	}
 
 }
