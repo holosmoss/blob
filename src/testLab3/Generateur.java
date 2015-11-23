@@ -22,6 +22,8 @@ public class Generateur {
 	//couleur du joueur
 	private int clientColor;
 	
+	private BoardDecoder decoder;
+	
 	//liste des moves des deux joueurs, cette liste est rempli dans le main
 	// avec dispatchPieces()
 	private ArrayList<Piece> us = new ArrayList<Piece>();
@@ -36,6 +38,7 @@ public class Generateur {
 	public Generateur(int clientColor, ArrayList<Piece> white, ArrayList<Piece> black ){
 		
 		this.clientColor = clientColor;
+		this.decoder = new BoardDecoder();
 		
 		if(clientColor == WHITE){
 			this.us = white;
@@ -55,21 +58,54 @@ public class Generateur {
 		}	
 	}
 	
-	/*
-	 * Une fois le generateur créé et le premier coup joué, on utilisera
-	 * cette methode pour update les liste de pièces
+	/**
+	 * Update une pièce p de notre liste de pièce
+	 * @param p
+	 * @return int - correspondant au type de la pièce updaté soit un pusher(4) ou pushy(3)
 	 */
-	public void updatePlayerPiecesList(ArrayList<Piece> white, ArrayList<Piece> black){
-		if(this.clientColor == WHITE){
-			this.us = white;
-			this.them = black;
+	public int updateOurPiecesList(int ID, int col, int row){
+		int type = 5; //init a un type inexistant
+		for(int i = 0; i < this.us.size(); i++){
+			if( this.us.get(i).getID() == ID ){
+				
+				//update la pièce dans la liste
+				this.us.get(i).setCol( col );
+				this.us.get(i).setRow( row );
+				type = this.us.get(i).getValeur();
+				// quitte la boucle
+				i = this.us.size(); 
+			}
 		}
-		else{
-			this.us = black;
-			this.them = white;
-		}
-		
+		return type;
 	}
+
+	
+	/**
+	 * Update une pièce p de la liste de pièce ennemi
+	 * @param p
+	 * @return int - correspondant au type de la pièce updaté soit un pusher(2) ou pushy(1)
+	 */
+	public int updateTheirPiecesList(int fromCol, int fromRow, int ToCol, int ToRow){		
+		int type = 5;
+		for(int i = 0; i < this.them.size(); i++){
+			
+			//s'il s'agit de la pièce sur la case int[fromCol][fromRow]
+			if( this.them.get(i).getCol() == fromCol && 
+				this.them.get(i).getRow() == fromRow ){
+				
+				//update la pièce dans la liste
+				this.them.get(i).setCol( ToCol );
+				this.them.get(i).setRow( ToRow );
+				type = this.them.get(i).getValeur();
+				
+				// quitte la boucle
+				i = this.them.size(); 
+			}
+		}
+		return type;
+	}
+	
+	
 	
 	public List<Move>  generateurMouvement(int couleur){
 		List<Move> listMove;
@@ -101,7 +137,8 @@ public class Generateur {
 					Move diagPlus = new Move(piece.getRow(),
 											 piece.getCol(),
 											 piece.getRow()-1,
-											 piece.getCol()+1 );
+											 piece.getCol()+1,
+											 piece.getID() );
 					moves.add(diagPlus);
 				}
 				//diag à gauche xmod = -1
@@ -110,7 +147,8 @@ public class Generateur {
 					Move diagMinus = new Move(piece.getRow(),
 							 				  piece.getCol(),
 							 				  piece.getRow()-1,
-							 				  piece.getCol()+1 );
+							 				  piece.getCol()-1,
+							 				  piece.getID() );
 					moves.add(diagMinus);
 				}
 				if(!isBlocked(piece.getCol(), piece.getRow(), couleur)){
@@ -118,7 +156,8 @@ public class Generateur {
 					Move forward = new Move(piece.getRow(),
 			 				  				piece.getCol(),
 			 				  				piece.getRow()-1,
-			 				  				piece.getCol() );
+			 				  				piece.getCol(),
+							 				piece.getID() );
 					moves.add(forward);
 				}
 			}
@@ -130,7 +169,8 @@ public class Generateur {
 					Move diagPlus = new Move(piece.getRow(),
 							 				 piece.getCol(),
 							 				 piece.getRow()-1,
-							 				 piece.getCol()+1 );
+							 				 piece.getCol()+1,
+							 				 piece.getID()  );
 					
 					moves.add(diagPlus);
 				}
@@ -139,7 +179,8 @@ public class Generateur {
 					Move diagMinus = new Move(piece.getRow(),
 											  piece.getCol(),
 											  piece.getRow()-1,
-											  piece.getCol()+1 );
+											  piece.getCol()-1,
+							 				  piece.getID() );
 					moves.add(diagMinus);
 				}
 				if(canBePush(piece.getCol(), piece.getRow(), couleur, 0)){
@@ -147,7 +188,8 @@ public class Generateur {
 					Move forward = new Move(piece.getRow(),
 				  							piece.getCol(),
 				  							piece.getRow()-1,
-				  							piece.getCol() );
+				  							piece.getCol(),
+							 				piece.getID() );
 					moves.add(forward);
 				}
 			}
@@ -173,7 +215,8 @@ public class Generateur {
 					Move diagPlus = new Move(piece.getRow(),
 											 piece.getCol(),
 											 piece.getRow()+1,
-											 piece.getCol()+1 );
+											 piece.getCol()+1,
+							 				 piece.getID() );
 					moves.add(diagPlus);
 				}
 				//diag à gauche xmod = -1
@@ -182,7 +225,8 @@ public class Generateur {
 					Move diagMinus = new Move(piece.getRow(),
 							 				  piece.getCol(),
 							 				  piece.getRow()+1,
-							 				  piece.getCol()+1 );
+							 				  piece.getCol()-1,
+							 				  piece.getID() );
 					moves.add(diagMinus);
 				}
 				if(!isBlocked(piece.getCol(), piece.getRow(), couleur)){
@@ -190,7 +234,8 @@ public class Generateur {
 					Move forward = new Move(piece.getRow(),
 			 				  				piece.getCol(),
 			 				  				piece.getRow()+1,
-			 				  				piece.getCol() );
+			 				  				piece.getCol(),
+							 				piece.getID() );
 					moves.add(forward);
 				}
 			}
@@ -202,7 +247,8 @@ public class Generateur {
 					Move diagPlus = new Move(piece.getRow(),
 							 				 piece.getCol(),
 							 				 piece.getRow()+1,
-							 				 piece.getCol()+1 );
+							 				 piece.getCol()+1,
+							 				 piece.getID() );
 					
 					moves.add(diagPlus);
 				}
@@ -211,7 +257,8 @@ public class Generateur {
 					Move diagMinus = new Move(piece.getRow(),
 											  piece.getCol(),
 											  piece.getRow()+1,
-											  piece.getCol()+1 );
+											  piece.getCol()-1,
+							 				  piece.getID() );
 					moves.add(diagMinus);
 				}
 				if(canBePush(piece.getCol(), piece.getRow(), couleur, 0)){
@@ -219,7 +266,8 @@ public class Generateur {
 					Move forward = new Move(piece.getRow(),
 				  							piece.getCol(),
 				  							piece.getRow()+1,
-				  							piece.getCol() );
+				  							piece.getCol(),
+							 				piece.getID() );
 					moves.add(forward);
 				}
 			}
@@ -254,8 +302,11 @@ public class Generateur {
 	 */
 	private boolean canPusherMoveDiag(int x, int y, int color, int xmod){
 		if(color == WHITE){
+			
+			if( isOutOfBound(x, xmod) )
+				return false;
 			//si xmod = 1 check diag gauche, si -1 x--1 = x+1 alors diag droite
-			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4){
+			else if( Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4){
 				//pas de pièces à nous dans la prochain case et
 				//check si on sort pas du board
 				return false;
@@ -266,7 +317,10 @@ public class Generateur {
 			
 		}else{
 			
-			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2){
+			if( isOutOfBound(x, xmod) )
+				return false;
+			
+			else if( Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2){
 				return false;
 			}else{
 				//true si vide ou si ennemi alors on mange
@@ -290,10 +344,13 @@ public class Generateur {
 		//is the pushy able to go to x+xmod
 		if(color == WHITE){
 			//white pushy
-			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4 ){
+			
+			if( isOutOfBound(x, xmod) )
+				return false;
+			else if( Client.board[x-xmod][y-1] == 3 || Client.board[x-xmod][y-1] == 4 ){
 				//is blocked by one of its color
 				return false;
-			}else if( isOutOfBound(x, xmod) || Client.board[x+xmod][y+1] == 4){
+			}else if( Client.board[x+xmod][y+1] == 4){
 				//has a pusher to push to xModified -1y
 				return true;
 			}else{
@@ -301,10 +358,13 @@ public class Generateur {
 			}
 		}else{
 			//Black pushy
-			if( isOutOfBound(x, xmod) || Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2 ){
+			
+			if( isOutOfBound(x, xmod) )
+				return false;
+			else if( Client.board[x-xmod][y+1] == 1 || Client.board[x-xmod][y+1] == 2 ){
 				//is blocked by one of its color
 				return false;
-			}else if( isOutOfBound(x, xmod) || Client.board[x+xmod][y-1] == 2){
+			}else if( Client.board[x+xmod][y-1] == 2){
 				//has a pusher to push to xModified +1y
 				return true;
 			}else{
@@ -320,17 +380,12 @@ public class Generateur {
 	 * @return
 	 */
 	private boolean isOutOfBound(int x, int xmod){
-		if(x-xmod < 0)
-			return true;
-		else if(x+xmod < 0)
-			return true;
-		else if(x-xmod > 7)
-			return true;
-		else if(x+xmod > 7)
+		if( (x == 0 && xmod == 1) || (x == 7 && xmod == -1) || (x+xmod < 0) || (x-xmod) > 7 || (x+xmod) > 7 )
 			return true;
 		else
-			return false;
-		
+			return false;		
 	}
+
+	
 
 }

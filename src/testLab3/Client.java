@@ -17,6 +17,10 @@ class Client {
     
     static PusherGame game;
     
+    static BoardDecoder decoder = new BoardDecoder();
+    static int[] coord = new int[4];
+
+    
 
     
 	public static void main(String[] args) {
@@ -61,7 +65,7 @@ class Client {
 	                    
 	                    //si la case n'est pas vide, ajoute la pièce
 	                    if(value != 0 ){
-	                    	dispatchPieces(x,y,value);
+	                    	dispatchPieces(x,y,value, i);
 	                    }
 	                    x++;
 	                    if(x == 8){
@@ -70,13 +74,13 @@ class Client {
 	                    }
 	                }
 	                
+	                //instancie le jeu, you know, also magic
 	                game = new PusherGame(color, whites, blacks);
 	                
+	                //choose the first move!
 	                move = game.chooseMove();
 	
-	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
-	               
-
+	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : "); 
 	                
 	                //move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
@@ -106,7 +110,7 @@ class Client {
 	                	int value = Integer.parseInt(boardValues[i]);
 	                    board[x][y] = value;
 	                    if(value != 0 ){
-	                    	dispatchPieces(x,y,value);
+	                    	dispatchPieces(x,y,value, i);
 	                    }
 	                    x++;
 	                    if(x == 8){
@@ -116,7 +120,7 @@ class Client {
 	                }
 	                
 	                game = new PusherGame(color, whites, blacks);
-	                //game.;
+	                
 	            }
 	
 	
@@ -131,18 +135,24 @@ class Client {
 					
 					String s = new String(aBuffer);
 					System.out.println("Dernier coup : "+ s);
-					/*
-					 * TODO updater le model complet et le model des pions seulement
-					 * ^?COMENT just reloop ? Est-ce long ?
-					 */
-			       	System.out.println("Entrez votre coup : ");
-			       	/*
-	                 * TODO Arbre give us a move
-	                 */
+					coord = decoder.decodeEnemyLastMove(s);
 					
-					move = console.readLine();
+					// update la liste de pièce ennemi du generateur avec la dernier coup jouer
+					game.getGene().updateTheirPiecesList(coord[0], coord[1], coord[2], coord[3]);
+					
+					
+					
+					//notre liste est updaté dans l'évaluateur
+					
+			       	System.out.println("Entrez votre coup : ");
+			       	
+			       	//envoie notre prochain coup
+			       	move = game.chooseMove();
+					
+					//move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
+					System.out.println(move);
 					
 				}
 				// Le dernier coup est invalide
@@ -163,17 +173,17 @@ class Client {
     }
 	
 	/**
-	 * fonction qui rempli la liste de tableau de pièces
-	 * chaque pièces est décrite avec une coordonné X Y et une
+	 * fonction qui rempli la liste de pièces
+	 * chaque pièces est décrite avec une coordonné X(colonne) Y(ligne) et une
 	 * valeur correspondante à sa couleur et type de pièces
 	 * 3 = pushy blanc, 4 = pousseur blanc, le reste est noir
 	 * @param x
 	 * @param y
 	 * @param val
 	 */
-	private static void dispatchPieces(int x, int y, int val){
+	private static void dispatchPieces(int x, int y, int val, int ID){
 		
-		Piece piece = new Piece(val, x, y);
+		Piece piece = new Piece(val, x, y, ID);
 
 		if(val == 3 || val == 4){
 			whites.add(piece);

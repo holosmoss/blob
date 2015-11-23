@@ -9,11 +9,12 @@ public class Piece {
     //3 = pushy blanc, 4 = pousseur blanc
     private int valeur;    
     
-    
+    //identificateur de la pièce pour la retrouvé facilement
+    private int ID;
     
     //Position de la piece sur le board, le board étant un int[][]
-    private int x;
-    private int y;
+    private int x; //colonne
+    private int y; //ligne
 
     /**
      * Constructeur
@@ -21,10 +22,11 @@ public class Piece {
      * @param x - coordonnée en X du tableau int[X][Y] X = col
      * @param y - coordonnée en Y du tableau int[X][Y] Y = row
      */
-	public Piece(int valeur, int x, int y){
+	public Piece(int valeur, int x, int y, int ID){
     	this.valeur = valeur;    	
     	this.x = x;
     	this.y = y;
+    	this.ID = ID;
     }
 	
     public int getValeur() {
@@ -39,6 +41,20 @@ public class Piece {
 	public int getRow() {
 		return y;
 	}
+
+	public int getID() {
+		return this.ID;
+	}
+
+	public void setCol(int x) {
+		this.x = x;
+	}
+
+	public void setRow(int y) {
+		this.y = y;
+	}
+	
+	
     
     
 	
