@@ -133,12 +133,13 @@ public class BoardDecoder {
 		
 		//remplace l'espace et le trait d'union dans A2 - A3 pour A2A3
 		strTmp = s.replaceAll("[^a-zA-Z0-9\\s]", "");
-		strTmp = s.replaceAll(" +", "");
+		strTmp = strTmp.replaceAll(" +", "");
+	
 
 		coord[0] = decodeColToInt( strTmp.charAt(0) );// fromCol
-		coord[1] = decodeRowToInt( strTmp.charAt(1) );// fromRow
-		coord[2] = decodeRowToInt( strTmp.charAt(2) );// toCol
-		coord[3] = decodeRowToInt( strTmp.charAt(3) );// toRow
+		coord[1] = decodeRowToInt( Character.getNumericValue( strTmp.charAt(1) ) );// fromRow
+		coord[2] = decodeColToInt( strTmp.charAt(2) );// toCol
+		coord[3] = decodeRowToInt( Character.getNumericValue( strTmp.charAt(3) ) );// toRow
 		
 		return coord;
 	}

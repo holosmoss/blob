@@ -6,8 +6,11 @@ import java.util.ArrayList;
 
 
 class Client {
-	static int color;
-	static int enemyColor;
+	
+	static int color = 0;
+	static int enemyColor = 0;
+	static String strTmp = "null";
+	static boolean isColorPlayable;
 	
 	//liste de tableau correspondant aux pièces
     static ArrayList<Piece> whites = new ArrayList<Piece>();
@@ -20,7 +23,9 @@ class Client {
     static BoardDecoder decoder = new BoardDecoder();
     static int[] coord = new int[4];
 
-    
+	//valeur des couleurs des joueurs
+	static final int WHITE = 1;
+	static final int BLACK = 2;
 
     
 	public static void main(String[] args) {
@@ -28,12 +33,43 @@ class Client {
 		BufferedInputStream input;
 		BufferedOutputStream output;
 		String move;
+		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+		
+		//choix de la couleur avant la connexion
+		while( !isColorPlayable ){
+			if( !isColorPlayable ){
+				System.out.println("Veuillez choisir la couleur de vos pièces, 1 pour blanc, 2 pour noir: ");
+				
+				try {
+					strTmp = console.readLine();
+					color = Integer.parseInt(strTmp);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if( color == 1 ){
+				isColorPlayable = true;
+				enemyColor = 2;
+				
+			}
+			else if(color == 2){
+				isColorPlayable = true;
+				enemyColor = 1;
+			}
+			else
+				System.out.println("Erreur! Couleur inconnue!");
+		}
+		
 		try {
 			MyClient = new Socket("localhost", 8888);
 		   	input    = new BufferedInputStream(MyClient.getInputStream());
 			output   = new BufferedOutputStream(MyClient.getOutputStream());
 			
-			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));  
+			
+			
+			
+			
+			color = Integer.parseInt( strTmp );
 		   	
 			while(1 == 1){
 				char cmd = 0;
@@ -44,8 +80,7 @@ class Client {
 	            if(cmd == '1'){
 	                byte[] aBuffer = new byte[1024];
 	                //we set our color value to white
-	                color = 1;
-	                enemyColor = 2;
+
 					int size = input.available();
 					//System.out.println("size " + size);
 					input.read(aBuffer,0,size);
@@ -99,7 +134,7 @@ class Client {
 					//System.out.println("size " + size);
 					input.read(aBuffer,0,size);
 	                String s = new String(aBuffer).trim();
-	                System.out.println(s);
+	                //System.out.println(s);
 	                String[] boardValues;
 	                boardValues = s.split(" ");
 	                int x=0,y=0;
