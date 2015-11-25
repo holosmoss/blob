@@ -33,17 +33,20 @@ public class Evaluateur {
 									   bestMove.getToColumn(), 
 									   bestMove.getToRow()  
 									   );
+		
+		//TODO this needs to be a method in BoardState
 		//update le board client
 		Client.board[ bestMove.getFromColumn() ][bestMove.getFromRow() ] = 0; //ancienne case maintenant vide
 		Client.board[ bestMove.getToColumn() ][ bestMove.getToRow() ] = type; //nouvelle case = type pièce
 		
 		
+		//THIS is toString of everyMoves
 		//décode le move aléatoire en String "from to" ex: A2A3
-		from = bestMove.getMoveCoordinate(bestMove.getFromRow(), bestMove.getFromColumn() );
-		to = bestMove.getMoveCoordinate(bestMove.getToRow(), bestMove.getToColumn() );
+		//from = bestMove.getMoveCoordinate(bestMove.getFromRow(), bestMove.getFromColumn() );
+		//to = bestMove.getMoveCoordinate(bestMove.getToRow(), bestMove.getToColumn() );
 		
 		//retourne les coordonnées du move sous forme de String
-		return from+to ; //ex: A2A3 -> from A2 to A3
+		return "";//from+to ; //ex: A2A3 -> from A2 to A3
 	}
 	
 	

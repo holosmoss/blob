@@ -3,6 +3,7 @@ package testLab3;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 class Client {
@@ -12,12 +13,18 @@ class Client {
 	static String strTmp = "null";
 	static boolean isColorPlayable;
 	
-	//liste de tableau correspondant aux pièces
-    static ArrayList<Piece> whites = new ArrayList<Piece>();
-    static ArrayList<Piece> blacks = new ArrayList<Piece>();
+	//TODO HashMap so that we can still use ID and also delete entry without fucking the ID (which was index in arrays
+	//TODO no need for static its in the BoardState
+	static HashMap<Integer,Piece> whites = new HashMap<Integer,Piece>();
+    static HashMap<Integer,Piece> blacks = new HashMap<Integer,Piece>();
+	
+//    static ArrayList<Piece> whites = new ArrayList<Piece>();
+//    static ArrayList<Piece> blacks = new ArrayList<Piece>();
     
+    //TODO this should become a BoardState, no need for this thing static
     static int[][] board = new int[8][8];
-    
+	static BoardState realBoardState;
+
     static PusherGame game;
     
     static BoardDecoder decoder = new BoardDecoder();
@@ -35,6 +42,8 @@ class Client {
 		String move;
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 		
+		
+		//TODO is this a thing we want ?
 		//choix de la couleur avant la connexion
 		while( !isColorPlayable ){
 			if( !isColorPlayable ){
@@ -68,9 +77,11 @@ class Client {
 			
 			
 			
-			
+			//set static values
+			//TODO  is this the right place to set the color ? or is it the cmd value
 			color = Integer.parseInt( strTmp );
-		   	
+            game = new PusherGame();
+
 			while(1 == 1){
 				char cmd = 0;
 			   	
@@ -100,7 +111,7 @@ class Client {
 	                    
 	                    //si la case n'est pas vide, ajoute la pièce
 	                    if(value != 0 ){
-	                    	dispatchPieces(x,y,value, i);
+	                    	dispatchPieces(x,y,value,i);
 	                    }
 	                    x++;
 	                    if(x == 8){
@@ -108,17 +119,17 @@ class Client {
 	                        y++;
 	                    }
 	                }
-	                
-	                //instancie le jeu, you know, also magic
-	                game = new PusherGame(color, whites, blacks);
+	                //instancie le board static selon notre parsing du texte de depart
+	                realBoardState = new BoardState(board,whites,blacks);
 	                
 	                //choose the first move!
 	                move = game.chooseMove();
-	
+	                
 	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : "); 
 	                
 	                //move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
+					//TODO update RealBoardState
 					output.flush();
 					System.out.println(move);
 	            }
@@ -154,7 +165,8 @@ class Client {
 	                    }
 	                }
 	                
-	                game = new PusherGame(color, whites, blacks);
+	                //instancie le board static selon notre parsing du texte de depart
+	                realBoardState = new BoardState(board,whites,blacks);
 	                
 	            }
 	
@@ -172,8 +184,13 @@ class Client {
 					System.out.println("Dernier coup : "+ s);
 					coord = decoder.decodeEnemyLastMove(s);
 					
-					// update la liste de pièce ennemi du generateur avec la dernier coup jouer
-					game.getGene().updateTheirPiecesList(coord[0], coord[1], coord[2], coord[3]);
+					// Update le realBoardState avec le move adverse
+					//TODO we need to test if this eats one of ours and delete add this to the move.
+					//TODO id enemi ? genre un reverse HashMap search pour les coord 0-1 qui nous retourne le ID : meme chose pour le eaten
+					
+					Move newMove = new Move(coord[0], coord[1], coord[2], coord[3],12,enemyColor);
+					realBoardState.updateBoard(newMove);
+					//game.getGene().updateTheirPiecesList(coord[0], coord[1], coord[2], coord[3]);
 					
 					
 					
@@ -184,6 +201,7 @@ class Client {
 			       	//envoie notre prochain coup
 			       	move = game.chooseMove();
 					
+			    	//TODO update RealBoardState
 					//move = console.readLine();
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
@@ -195,6 +213,7 @@ class Client {
 					System.out.println("Coup invalide, entrez un nouveau coup : ");
 			       	
 					move = console.readLine();
+					//TODO what do we do here ?
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
 					
@@ -216,14 +235,16 @@ class Client {
 	 * @param y
 	 * @param val
 	 */
-	private static void dispatchPieces(int x, int y, int val, int ID){
-		
-		Piece piece = new Piece(val, x, y, ID);
-
+	private static void dispatchPieces(int x, int y, int val, int id){
+		//the ID is the index of the piece in its color arrayList
 		if(val == 3 || val == 4){
-			whites.add(piece);
+			Piece piece = new Piece(val, x, y, whites.size());
+			whites.put(id, piece);
+			//whites.add(piece);
 		}else{
-			blacks.add(piece);
+			Piece piece = new Piece(val, x, y, blacks.size());
+			blacks.put(id, piece);
+			//blacks.add(piece);
 		}
 	}
 }

@@ -28,7 +28,13 @@ public class Piece {
     	this.y = y;
     	this.ID = ID;
     }
-	
+	/**
+	 * 
+	 * @return true if valeur is of a White piece
+	 */
+	public boolean isWhite(){
+		return (this.valeur == 3 || this.valeur == 4) ? true : false;
+	}
     public int getValeur() {
 		return valeur;
 	}

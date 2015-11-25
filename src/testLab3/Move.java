@@ -22,21 +22,40 @@ public class Move implements Comparable<Move>{
     private int pieceID; //référence sur la pièce associé au move
     
     private BoardDecoder decoder;
+	private int currentColor;
+	private int eatedPieceID = -1;
 
 
     
-	public Move(int fromRow, int fromColumn, int toRow, int toColumn, int ID){
-		
+	public Move(int fromRow, int fromColumn, int toRow, int toColumn, int ID, int playingColor){
 		this.fromRow = fromRow;
 		this.fromColumn = fromColumn;
 		this.toRow = toRow;
 		this.toColumn = toColumn;
 		this.pieceID = ID;
-		
 		this.decoder = new BoardDecoder();
-		
+		this.currentColor = playingColor;
 	}
-	
+	public Move(int fromRow, int fromColumn, int toRow, int toColumn, int ID, int playingColor, int eatedID){
+		//Constructeur pour quand le move comporte manger une piece
+		this.fromRow = fromRow;
+		this.fromColumn = fromColumn;
+		this.toRow = toRow;
+		this.toColumn = toColumn;
+		this.pieceID = ID;
+		this.decoder = new BoardDecoder();
+		this.currentColor = playingColor;
+		this.eatedPieceID = eatedID;
+	}
+	public int getCurrentColor(){
+		return this.currentColor;
+	}
+	public boolean isEating(){
+		return (eatedPieceID != -1)?true:false;
+	}
+	public int getEatedPieceID(){
+		return this.eatedPieceID ;
+	}
 	public int getFromRow() {
 		return fromRow;
 	}
@@ -76,11 +95,10 @@ public class Move implements Comparable<Move>{
     public void setScore(int score){
         this.score = score;
     }
-    
     public int getPieceID() {
 		return pieceID;
 	}
-    
+    //TODO have a flag for the ID of the pice that was eaten if applicable
     
     /**
      * permet de changer les coordonnés en int d'un move 
@@ -105,6 +123,12 @@ public class Move implements Comparable<Move>{
         }else{
             return -1;
         }
+    }
+    @Override
+    public String toString(){
+    	String from = this.getMoveCoordinate(this.getFromRow(), this.getFromColumn() );
+    	String to = this.getMoveCoordinate(this.getToRow(), this.getToColumn() );
+    	return from+to;
     }
 
 }

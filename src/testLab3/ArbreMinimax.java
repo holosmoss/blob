@@ -3,7 +3,6 @@ package testLab3;
 
 import java.util.List;
 
-import testLab3.Generateur.Node;
 
 public class ArbreMinimax {
 
@@ -11,7 +10,7 @@ public class ArbreMinimax {
 	private Evaluateur eval;
 	private Generateur gene;
 	private long startTime;
-	private List<Node> nodeList;
+	private List<Move> moveList;
 	
 	static final int MAX_DEPTH = 6; //profondeur de recherche max plus c'est grand
 									//plus c'est précis, mais prendra plus de temps
@@ -22,7 +21,7 @@ public class ArbreMinimax {
      * Constructeur par defaut
      */
     public ArbreMinimax(){
-    	gene = new Generateur();
+    	//gene = new Generateur();
     	
     	
     }
@@ -37,54 +36,90 @@ public class ArbreMinimax {
      * @param beta
      * @return
      */
-    public int alphaBeta(Node node, boolean currentPlayer, int depth, int alpha, int beta) {
-    	if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
+    public int alphaBeta(Move move, boolean currentPlayer, int depth, int alpha, int beta) {
+    	/* if its a final move (win, lose) return value (heuristic)
+    	 * if its maximum depth (leaf node) return value (heuristic)
+    	 * else produce childrens 
+    	 * 		recursion with pruning alpha beta
+    	 * 	
+    	 * TODO have a boardState object to store the Pieces position
+    	 * -the BoardState should know who is the currentPlayer (to know if its color is ours and if we do a min or a max node to use ?)
+    	 *if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
             return Integer.MIN_VALUE;
         }
-    	if (depth <= 0) {
-//            return node.move.score; // score associé au move de la node max ??
-        }
-
-        this.nodeList = gene.getNodeList(); //TODO 
-
-        if (currentPlayer) { // notre AI tente de maximiser le score
-            for (Node NodeTemp : nodeList) {
-                alpha = Math.max(alpha, alphaBeta(NodeTemp, false, depth - 1, alpha, beta) );
-
-                if (beta <= alpha) {
-                    break; // prune
+    	 *
+    	 *
+    	 */
+    	//is the boolean currentPlayer appropriate ???
+    	if(currentPlayer){
+    		//we are in a max node
+    		//TODO why does the gene ask for color it knows it already right ?
+    		//TODO genreator is assuming we are white ? wtf is going on there
+    		List<Move> childs = gene.generateurMouvement(1);
+    		for(Move child : childs){
+    			//check for the 
+                alpha = Math.max(alpha, alphaBeta(child, false, depth - 1, alpha, beta) );
+                if(alpha >= beta)
+                {
+                	//TODO do we return alpha or beta ?
+                    return beta;
                 }
-            }
-            return alpha;
-        } else { // ennemi tente de minimiser le score
-            for (Node NodeTemp : nodeList) {
+    		}
+    		return alpha;
+    	}else{
+    		for (Move NodeTemp : moveList) {
                 beta = Math.min(beta, alphaBeta(NodeTemp, true, depth - 1, alpha, beta));
                 if (beta <= alpha) {
-                    break; // prune
+                    return alpha; 
                 }
             }
             return beta;
-        }
+    	}
     }
 	
 	/**
 	 * retourne le best move selon le score retourné par l'arbre
 	 * @return BestMove - le meilleur coup déterminer par l'arbre minMaxAlphaBeta
 	 */
-	public Move getBestMove(Node node){
+	public Move getBestMove(BoardState currentState){
 		
 		int best;
 		this.startTime = System.currentTimeMillis();
-	
 		
-		best = alphaBeta(node, true, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		//each node do stuff like : currentNode.getState().getCurrentPlayer().
+		//So that the BoardState
+		//TODO(we create 1st gen Child here and see which gets a best score.)
+		//TODO loop them and choose the one where the best value is found
+		//best = alphaBeta(move, true, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		//TODO get a handle on the Move that returns the chosen path
 		
-		Move bestMove = new Move(); //move vide
-		
-		//TODO bestMove = la node qui a scoré le plus...
-		
-		
-		return bestMove;
+		/**
+		 * GameState is used to transmit the move we made (so this should be a Move...)
+		 * 
+		 * 
+		 * public GameState move(GameState state) 
+		 	int alpha = -INFINITY;
+		    int beta = INFINITY;
+		    int bestScore = -Integer.MAX_VALUE;
+		    GameTreeNode gameTreeRoot = new GameTreeNode(state);
+		    GameState bestMove = null;
+		    for(GameTreeNode child: gameTreeRoot.getChildren())
+		    {
+		        if(bestMove == null)
+		        {
+		            bestMove = child.getState();
+		        }
+		        alpha = Math.max(alpha, miniMax(child, plyDepth - 1, alpha, beta));
+		        if(alpha > bestScore)
+		        {
+		            bestMove = child.getState();
+		            bestScore = alpha;
+		        }
+		    }
+		    return bestMove;
+		 */
+		//TODO return the Move to the Game that will update the BoardState
+		return new Move(1,1,1,1,1,1);
 	}
 	
 	
@@ -98,7 +133,7 @@ public class ArbreMinimax {
 	 * @param d
 	 * @return value de la node
 	 */
-	protected int minimax(Node node, int d){
+	protected int minimax(Move move, int d){
 		return 1;
 	}
 	

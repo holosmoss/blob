@@ -59,6 +59,7 @@ public class Generateur {
 	}
 	
 	/**
+	 * TODO remove to BoardState
 	 * Update une pièce p de notre liste de pièce
 	 * @param p
 	 * @return int - correspondant au type de la pièce updaté soit un pusher(4) ou pushy(3)
@@ -66,6 +67,7 @@ public class Generateur {
 	public int updateOurPiecesList(int ID, int col, int row){
 		int type = 5; //init a un type inexistant
 		for(int i = 0; i < this.us.size(); i++){
+			//TODO if the ID is the index we can go straight to it.
 			if( this.us.get(i).getID() == ID ){
 				
 				//update la pièce dans la liste
@@ -109,7 +111,7 @@ public class Generateur {
 	
 	public List<Move>  generateurMouvement(int couleur){
 		List<Move> listMove;
-
+		//TODO add the color to move created and clean the generator to proper functions
 		if(couleur == WHITE){
 			listMove = ourMoves(couleur);
 		}else{
