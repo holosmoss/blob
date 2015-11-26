@@ -21,6 +21,7 @@ public class Move implements Comparable<Move>{
     private int score;
     private int pieceID; //référence sur la pièce associé au move
     
+    //TODO mettre le decoder static
     private BoardDecoder decoder;
 	private int currentColor;
 	private int eatedPieceID = -1;
