@@ -3,8 +3,7 @@ package testLab3;
 
 public class PusherGame {
 	
-	private Generateur gene;
-    private Evaluateur eval;
+
 	private ArbreMinimax minimaxTree;
     
  
@@ -14,13 +13,6 @@ public class PusherGame {
     	this.minimaxTree = new ArbreMinimax();
     }
     
-    public Generateur getGene() {
-		return this.gene;
-	}
-
-	public Evaluateur getEval() {
-		return this.eval;
-	}
 
     public String chooseMove(){
     	//ask the minimax to return the best move extrapolated from the current realBoardState

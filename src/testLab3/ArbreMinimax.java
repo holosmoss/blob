@@ -38,6 +38,8 @@ public class ArbreMinimax {
      */
     public int alphaBeta(Move move, boolean currentPlayer, int depth, int alpha, int beta) {
     	/* if its a final move (win, lose) return value (heuristic)
+    	 * 	TODO we need the boardstate for the eval of the win lose state
+    	 *  ?? TODO is the board state a better place to decide this ? on le laisse dans eval pour linstant
     	 * if its maximum depth (leaf node) return value (heuristic)
     	 * else produce childrens 
     	 * 		recursion with pruning alpha beta
