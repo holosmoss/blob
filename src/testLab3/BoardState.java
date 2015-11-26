@@ -30,29 +30,79 @@ public class BoardState {
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
 		int pieceMovedID = change.getPieceID();
+		
 		if(change.getCurrentColor() == Client.WHITE){
 			pieceMoved = this.whitePieces.get(pieceMovedID);
 			//change position in our internal white array
 			this.whitePieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.whitePieces.get(pieceMovedID).setRow(change.getToRow());
-			if(change.isEating()){
-				//Removing the pieces that are eaten by the new move (this is why whitePieces needs to be an HashMap)
-				this.blackPieces.remove(change.getEatedPieceID());
+			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
+				//Removing the pieces that are eaten by the new move
+				this.blackPieces.remove( findPieceIdAt(change.getToColumn(), 
+													   change.getToRow(), 
+													   this.blackPieces) 
+									   );
 			}
 		}else{
 			pieceMoved = this.blackPieces.get(change.getPieceID());
 			//change position in our internal black array
 			this.blackPieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.blackPieces.get(pieceMovedID).setRow(change.getToRow());
-			//TODO if the move is eating a pieces update the white array
-			if(change.isEating()){
-				//Removing the pieces that are eaten by the new move (this is why whitePieces needs to be an HashMap)
-				this.whitePieces.remove(change.getEatedPieceID());
+			
+			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
+				//Removing the pieces that are eaten by the new move
+				this.whitePieces.remove( findPieceIdAt(change.getToColumn(), 
+						   							   change.getToRow(), 
+						   							   this.whitePieces) 
+									   );
 			}
 		}
+		
 		this.state[ change.getFromColumn() ][change.getFromRow() ] = 0; //ancienne case maintenant vide
 		this.state[ change.getToColumn() ][ change.getToRow() ] = pieceMoved.getValeur(); //nouvelle case = type pièce
 		
+	}
+	
+	/**
+	 * Retour l'ID de la pièce a la position (X,Y)
+	 * @param x - coordonné en X
+	 * @param y - coordonné en Y
+	 * @param list - la liste dans la quelle on souhaite chercher la pièce
+	 * @return
+	 */
+	public int findPieceIdAt(int x, int y, HashMap<Integer,Piece> listPiece){
+		int ID = 0;
+		
+			for(int i = 0; i < listPiece.size()-1; i++){				
+				//si les valeurs x et y de la pièce correspondent
+				if( listPiece.get(i).getCol() == x && 
+					listPiece.get(i).getRow() == y 
+				){
+					ID = listPiece.get(i).getID();
+					
+					// quitte la boucle quand trouvé
+					i = listPiece.size()-1;
+				}
+				
+			}		
+		return ID;
+	}
+	
+	
+	/**
+	 * Vérifie si la destination d'un move va manger une pièce
+	 * @param x
+	 * @param y
+	 * @return true si manger
+	 */
+	public boolean isMoveEating(int x, int y){
+		int valeurAtXY = this.state[x][y];
+		
+		if(valeurAtXY != 0){
+			return true;
+		}
+		else
+			return false;
 	}
 	
 }
