@@ -39,42 +39,48 @@ public class BoardState {
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
 		int pieceMovedID = change.getPieceID();
-		Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
+		affichageGrille(state);
+		//Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
 		if(change.getCurrentColor() == Client.WHITE){
+			
 			pieceMoved = this.whitePieces.get(pieceMovedID);
 			//change position in our internal white array
-			Client.print("id -"+pieceMovedID+"-  w: "+pieceMoved);
+			
 			this.whitePieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.whitePieces.get(pieceMovedID).setRow(change.getToRow());
-			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
-				Client.print("REMOVE ME im B::::::: "+getPieceID(change.getToColumn(), 
-													   change.getToRow(), 
-													   Client.BLACK));
+			if( isMoveEating(change.getToColumn(), change.getToRow(), Client.WHITE) ){
+				Client.print(">>>>>>>>>>>"+pieceMoved.getValeur()+" mange "+state[change.getToColumn()][change.getToRow()]+" with ID "+getPieceID(change.getToColumn(), 
+						   change.getToRow(), 
+						   Client.BLACK));
 				//Removing the pieces that are eaten by the new move
+				Client.print("blac size "+this.blackPieces.size());
 				this.blackPieces.remove( getPieceID(change.getToColumn(), 
 													   change.getToRow(), 
 													   Client.BLACK) 
 									   );
+				Client.print("blac newsize "+this.blackPieces.size());
 			}
 		}else{
 			
 			pieceMoved = this.blackPieces.get(pieceMovedID);
-			//Client.print("update 1");
+			
 			//change position in our internal black array
-			Client.print("id -"+pieceMovedID+"- b: "+pieceMoved);
 			this.blackPieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.blackPieces.get(pieceMovedID).setRow(change.getToRow());
 			//Client.print("update 2");
 
-			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
-				Client.print(" REMOVE ME im W::::::: "+getPieceID(change.getToColumn(), 
+			if( isMoveEating(change.getToColumn(), change.getToRow(), Client.BLACK) ){
+				Client.print(">>>>>>>>>>>"+pieceMoved.getValeur()+" mange "+state[change.getToColumn()][change.getToRow()]+" with ID "+getPieceID(change.getToColumn(), 
 						   change.getToRow(), 
 						   Client.WHITE));
+
 				//Removing the pieces that are eaten by the new move
+				Client.print("whit size "+this.whitePieces.size());
 				this.whitePieces.remove( getPieceID(change.getToColumn(), 
 						   							   change.getToRow(), 
 						   							   Client.WHITE) 
 									   );
+				Client.print("whit newsize "+this.whitePieces.size());
 			}
 		}
 		
@@ -91,14 +97,17 @@ public class BoardState {
 	 * @return
 	 */
 	public int getPieceID(int x, int y, int color) {
+		//Client.print("~~x:"+x+"~~~y:"+y+"~~");
 		HashMap<Integer,Piece> hashMap = (color == Client.WHITE) ? whitePieces:blackPieces;
 		for(Entry<Integer, Piece> entry : hashMap.entrySet()) {
-		    //int key = entry.getKey();
+		    int key = entry.getKey();
 		    Piece value = entry.getValue();
+		    //Client.print(key+"~ x:"+value.getCol()+"~y:"+value.getRow());
 		    if(value.getCol() == x && value.getRow() == y){
 		    	return value.getID();
 		    }
 		}
+		//Client.print("~~~~~~~");
 		//no id found
 		return -1;
 	}
@@ -110,15 +119,38 @@ public class BoardState {
 	 * @param y
 	 * @return true si manger
 	 */
-	public boolean isMoveEating(int x, int y){
+	public boolean isMoveEating(int x, int y, int color){
 		int valeurAtXY = this.state[x][y];
-		
-		Client.print(" valeurAtXY to be eaten "+valeurAtXY);
-		if(valeurAtXY != 0){
+		int pusher;
+		int pushy;
+		//on ajoute les pion de la meme couleurs comme safety
+		if(color == Client.WHITE){
+			pusher = 4;
+			pushy = 3;
+		}else{
+			pusher = 2;
+			pushy = 1;
+		}
+		if(valeurAtXY != 0 && valeurAtXY != pusher && valeurAtXY != pushy){
 			return true;
 		}
 		else
 			return false;
 	}
-	
+	/**
+	 * Fonction qui print le board en 8 par 8
+	 * @param grille
+	 */
+	public void affichageGrille(int[][] grille){
+		
+		System.out.println("-------------");
+		for (int row = 0; row < 8; row++) 
+		{
+			for (int col = 0; col < 8; col++){
+				System.out.print(grille[col][row]);
+			}
+			System.out.println();
+		}
+		System.out.println("-------------");
+	}
 }
