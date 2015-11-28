@@ -39,13 +39,17 @@ public class BoardState {
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
 		int pieceMovedID = change.getPieceID();
-		//Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
+		Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
 		if(change.getCurrentColor() == Client.WHITE){
 			pieceMoved = this.whitePieces.get(pieceMovedID);
 			//change position in our internal white array
+			Client.print("id -"+pieceMovedID+"-  w: "+pieceMoved);
 			this.whitePieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.whitePieces.get(pieceMovedID).setRow(change.getToRow());
 			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
+				Client.print("REMOVE ME im B::::::: "+getPieceID(change.getToColumn(), 
+													   change.getToRow(), 
+													   Client.BLACK));
 				//Removing the pieces that are eaten by the new move
 				this.blackPieces.remove( getPieceID(change.getToColumn(), 
 													   change.getToRow(), 
@@ -53,12 +57,19 @@ public class BoardState {
 									   );
 			}
 		}else{
-			pieceMoved = this.blackPieces.get(change.getPieceID());
+			
+			pieceMoved = this.blackPieces.get(pieceMovedID);
+			//Client.print("update 1");
 			//change position in our internal black array
+			Client.print("id -"+pieceMovedID+"- b: "+pieceMoved);
 			this.blackPieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.blackPieces.get(pieceMovedID).setRow(change.getToRow());
-			
+			//Client.print("update 2");
+
 			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
+				Client.print(" REMOVE ME im W::::::: "+getPieceID(change.getToColumn(), 
+						   change.getToRow(), 
+						   Client.WHITE));
 				//Removing the pieces that are eaten by the new move
 				this.whitePieces.remove( getPieceID(change.getToColumn(), 
 						   							   change.getToRow(), 
@@ -102,6 +113,7 @@ public class BoardState {
 	public boolean isMoveEating(int x, int y){
 		int valeurAtXY = this.state[x][y];
 		
+		Client.print(" valeurAtXY to be eaten "+valeurAtXY);
 		if(valeurAtXY != 0){
 			return true;
 		}

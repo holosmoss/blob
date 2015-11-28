@@ -47,7 +47,7 @@ public class Generateur {
 		    int key = entry.getKey();
 		    Piece piece = entry.getValue();
 		    int pieceType = piece.getValeur();
-//		    Client.print("piece : "+pieceType+" || col : "+piece.getCol()+" row :"+piece.getRow());
+		   //Client.print("piece : "+pieceType+" || col : "+piece.getCol()+" row :"+piece.getRow());
 		    //TODO this can be shortened a lot since the moves are the same for both type of pieces its juste the tests thats change.
 		    switch(pieceType){
 		    case 1:
