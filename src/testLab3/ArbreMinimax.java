@@ -53,13 +53,14 @@ public class ArbreMinimax {
 		if(move.getCurrentColor() == Client.color){
     		maxNode  = true;
     		nextColor = Client.enemyColor;
-    		Client.print("alphabeta MAX at"+depth);
+    		//Client.print("alphabeta MAX at"+depth);
     	}else{
     		maxNode = false;
     		nextColor = Client.color;
-    		Client.print("alphabeta MIN at"+depth);
-
+    		//Client.print("alphabeta MIN at"+depth);
     	}
+    	Client.print("-------------alphabeta--isMax : "+maxNode+"-------------------------------------profondeur : "+depth);
+
     	//System.out.println("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode);
 
     	
@@ -93,7 +94,7 @@ public class ArbreMinimax {
     		//TODO eval should order them (differently for min max ??)
     		//we are in a max node
     		for(Move child : childs){
-    			Client.print(child.getCurrentColor()+" color! "+depth);
+    			//Client.print(child.getCurrentColor()+" color! "+depth);
     			//check for the 
                 alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
