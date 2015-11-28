@@ -15,6 +15,7 @@ public class PusherGame {
     
 
     public String chooseMove(){
+    	System.out.println("Game chooseMove :");
     	//ask the minimax to return the best move extrapolated from the current realBoardState
     	Move bestMove = this.minimaxTree.getBestMove(Client.realBoardState);
     	return bestMove.toString();
