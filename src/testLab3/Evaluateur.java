@@ -1,7 +1,9 @@
 package testLab3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 public class Evaluateur {
 	
@@ -79,23 +81,23 @@ public class Evaluateur {
 	 * @return boolean - true/false s'il en reste ou non
 	 */
 	public boolean isTherePusherLeft(BoardState state, int color){
-		
-		
-		//TODO est-ce qu'on check le state[][] ou les liste de piece ?? avec les liste c'est plus simple
-		
-		//check s'il rest au moins 1 pusher blanc si oui return true
+		//check s'il rest au moins 1 pusher de notre couleur si oui return true
+		HashMap<Integer, Piece> hashMap;
+		//choix des pieces
 		if(color == WHITE){
-			for(int i =0; i < state.getWhitePieces().size(); i++)
-				if (state.getWhitePieces().get(i).getValeur() == 4)
-					return true;
+			hashMap=state.getWhitePieces();
 		}
-		//check s'il reste au moins 1 pusher noir, si oui return true
 		else{
-			for(int i =0; i < state.getBlackPieces().size(); i++)
-				if (state.getBlackPieces().get(i).getValeur() == 2)
-					return true;
+			hashMap=state.getBlackPieces();
 		}
-		
+		//test pour pusher
+		for(Entry<Integer, Piece> entry : hashMap.entrySet()) {
+			 Piece piece = entry.getValue();
+			 int value = piece.getValeur();
+			 if(value == 2 || value == 4){
+				 return true;
+			 }
+		}
 		return false;
 	}
 	/**

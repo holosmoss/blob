@@ -39,7 +39,7 @@ public class BoardState {
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
 		int pieceMovedID = change.getPieceID();
-		
+		//Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
 		if(change.getCurrentColor() == Client.WHITE){
 			pieceMoved = this.whitePieces.get(pieceMovedID);
 			//change position in our internal white array
