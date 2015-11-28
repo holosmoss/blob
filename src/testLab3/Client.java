@@ -38,9 +38,9 @@ class Client {
 		Socket MyClient;
 		BufferedInputStream input;
 		BufferedOutputStream output;
-		String move;
+		String moveString;
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-		
+		Move move;
 		
 		//TODO is this a thing we want ?
 		//choix de la couleur avant la connexion
@@ -123,14 +123,15 @@ class Client {
 	                
 	                //choose the first move!
 	                move = game.chooseMove();
+	                moveString = move.toString();
 	                
-	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : "); 
-	                
+	                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
+	                //update our board
+	                realBoardState.updateBoard(move);
 	                //move = console.readLine();
-					output.write(move.getBytes(),0,move.length());
-					//TODO update RealBoardState
+					output.write(moveString.getBytes(),0,moveString.length());
 					output.flush();
-					System.out.println(move.toString());
+					System.out.println(moveString.toString());
 	            }
 	            
 	            // Début de la partie en joueur Noir
@@ -195,22 +196,24 @@ class Client {
 			       	System.out.println("Entrez votre coup : ");
 			       	
 			       	//envoie notre prochain coup
-			       	move = game.chooseMove();
+			       	
+			        move = game.chooseMove();
+			       	moveString = move.toString();
 					
 			    	//TODO update RealBoardState
 					//move = console.readLine();
-					output.write(move.getBytes(),0,move.length());
+					output.write(moveString.getBytes(),0,moveString.length());
 					output.flush();
-					System.out.println(move);
+					System.out.println(moveString);
 					
 				}
 				// Le dernier coup est invalide
 				if(cmd == '4'){
 					System.out.println("Coup invalide, entrez un nouveau coup : ");
 			       	
-					move = console.readLine();
+					moveString = console.readLine();
 					//TODO what do we do here ?
-					output.write(move.getBytes(),0,move.length());
+					output.write(moveString.getBytes(),0,moveString.length());
 					output.flush();
 					
 				}
@@ -244,6 +247,9 @@ class Client {
 			blacks.put(id, piece);
 			//blacks.add(piece);
 		}
+	}
+	static void print(String txt){
+		System.out.println(txt);
 	}
 }
 
