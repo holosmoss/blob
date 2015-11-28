@@ -25,7 +25,15 @@ public class BoardState {
 	public int[][] getState() {
 		return state;
 	}
-	
+		
+	public HashMap<Integer, Piece> getWhitePieces() {
+		return whitePieces;
+	}
+
+	public HashMap<Integer, Piece> getBlackPieces() {
+		return blackPieces;
+	}
+
 	public void updateBoard(Move change){
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
