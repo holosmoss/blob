@@ -2,6 +2,7 @@ package testLab3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class BoardState {
 	
@@ -38,9 +39,9 @@ public class BoardState {
 			this.whitePieces.get(pieceMovedID).setRow(change.getToRow());
 			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
 				//Removing the pieces that are eaten by the new move
-				this.blackPieces.remove( findPieceIdAt(change.getToColumn(), 
+				this.blackPieces.remove( getPieceID(change.getToColumn(), 
 													   change.getToRow(), 
-													   this.blackPieces) 
+													   Client.BLACK) 
 									   );
 			}
 		}else{
@@ -51,9 +52,9 @@ public class BoardState {
 			
 			if( isMoveEating(change.getToColumn(), change.getToRow() ) ){
 				//Removing the pieces that are eaten by the new move
-				this.whitePieces.remove( findPieceIdAt(change.getToColumn(), 
+				this.whitePieces.remove( getPieceID(change.getToColumn(), 
 						   							   change.getToRow(), 
-						   							   this.whitePieces) 
+						   							   Client.WHITE) 
 									   );
 			}
 		}
@@ -64,28 +65,23 @@ public class BoardState {
 	}
 	
 	/**
-	 * Retour l'ID de la pièce a la position (X,Y)
+	 * Retour l'ID de la pièce a la position (X,Y) ou -1 si il ny en a pas
 	 * @param x - coordonné en X
 	 * @param y - coordonné en Y
-	 * @param list - la liste dans la quelle on souhaite chercher la pièce
+	 * @param color - la liste dans la quelle on souhaite chercher la pièce
 	 * @return
 	 */
-	public int findPieceIdAt(int x, int y, HashMap<Integer,Piece> listPiece){
-		int ID = 0;
-		
-			for(int i = 0; i < listPiece.size()-1; i++){				
-				//si les valeurs x et y de la pièce correspondent
-				if( listPiece.get(i).getCol() == x && 
-					listPiece.get(i).getRow() == y 
-				){
-					ID = listPiece.get(i).getID();
-					
-					// quitte la boucle quand trouvé
-					i = listPiece.size()-1;
-				}
-				
-			}		
-		return ID;
+	public int getPieceID(int x, int y, int color) {
+		HashMap<Integer,Piece> hashMap = (color == Client.WHITE) ? whitePieces:blackPieces;
+		for(Entry<Integer, Piece> entry : hashMap.entrySet()) {
+		    int key = entry.getKey();
+		    Piece value = entry.getValue();
+		    if(value.getCol() == x && value.getRow() == y){
+		    	return value.getID();
+		    }
+		}
+		//no id found
+		return -1;
 	}
 	
 	
