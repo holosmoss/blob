@@ -2,7 +2,6 @@ package testLab3;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -131,7 +130,7 @@ class Client {
 					output.write(move.getBytes(),0,move.length());
 					//TODO update RealBoardState
 					output.flush();
-					System.out.println(move);
+					System.out.println(move.toString());
 	            }
 	            
 	            // Début de la partie en joueur Noir
@@ -185,12 +184,9 @@ class Client {
 					coord = decoder.decodeEnemyLastMove(s);
 					
 					// Update le realBoardState avec le move adverse
-					//TODO we need to test if this eats one of ours and delete add this to the move.
-					//TODO id enemi ? genre un reverse HashMap search pour les coord 0-1 qui nous retourne le ID : meme chose pour le eaten
-					
-					Move newMove = new Move(coord[0], coord[1], coord[2], coord[3],12,enemyColor);
+					int id = realBoardState.getPieceID(coord[0], coord[1], enemyColor);
+					Move newMove = new Move(coord[0], coord[1], coord[2], coord[3],id,enemyColor);
 					realBoardState.updateBoard(newMove);
-					//game.getGene().updateTheirPiecesList(coord[0], coord[1], coord[2], coord[3]);
 					
 					
 					
@@ -239,10 +235,12 @@ class Client {
 		//the ID is the index of the piece in its color arrayList
 		if(val == 3 || val == 4){
 			Piece piece = new Piece(val, x, y, id);
+			System.out.println(val+"- "+x+":"+y+" = "+id);
 			whites.put(id, piece);
 			//whites.add(piece);
 		}else{
 			Piece piece = new Piece(val, x, y, id);
+			System.out.println(val+"- "+x+":"+y+" = "+id);
 			blacks.put(id, piece);
 			//blacks.add(piece);
 		}

@@ -26,7 +26,15 @@ public class BoardState {
 	public int[][] getState() {
 		return state;
 	}
-	
+		
+	public HashMap<Integer, Piece> getWhitePieces() {
+		return whitePieces;
+	}
+
+	public HashMap<Integer, Piece> getBlackPieces() {
+		return blackPieces;
+	}
+
 	public void updateBoard(Move change){
 		//Update the positions of the moved pieces in our internal state (before and after) according to the Move
 		Piece pieceMoved;
@@ -74,7 +82,7 @@ public class BoardState {
 	public int getPieceID(int x, int y, int color) {
 		HashMap<Integer,Piece> hashMap = (color == Client.WHITE) ? whitePieces:blackPieces;
 		for(Entry<Integer, Piece> entry : hashMap.entrySet()) {
-		    int key = entry.getKey();
+		    //int key = entry.getKey();
 		    Piece value = entry.getValue();
 		    if(value.getCol() == x && value.getRow() == y){
 		    	return value.getID();
