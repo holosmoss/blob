@@ -49,10 +49,16 @@ public class ArbreMinimax {
     	 *
     	 */
     	boolean maxNode;
-    	if(move.getCurrentColor() == Client.color){
+    	int nextColor;
+		if(move.getCurrentColor() == Client.color){
     		maxNode  = true;
+    		nextColor = Client.enemyColor;
+    		Client.print("alphabeta MAX at"+depth);
     	}else{
     		maxNode = false;
+    		nextColor = Client.color;
+    		Client.print("alphabeta MIN at"+depth);
+
     	}
     	//System.out.println("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode);
 
@@ -79,14 +85,15 @@ public class ArbreMinimax {
     	}
     	//we are not at the end of the tree so lets generate an other generation
     	//TODO use a test list (hardcoded moves for us and them(we need to know the active player));
-    	//Client.print("++++++++++++++++++++++++++ TEMP state : from :"+move.getFromColumn()+"."+move.getFromRow()+" to :"+move.getToColumn()+"."+move.getToRow());
-    	ArrayList<Move> childs = gene.generateurMouvement(tempState,move.getCurrentColor());
+    	//TODO the move.GetCurrentcolor needs to change created as the proper type so the inverse of our current color ?
+    	ArrayList<Move> childs = gene.generateurMouvement(tempState,nextColor);
     	
     	
     	if(maxNode){
     		//TODO eval should order them (differently for min max ??)
     		//we are in a max node
     		for(Move child : childs){
+    			Client.print(child.getCurrentColor()+" color! "+depth);
     			//check for the 
                 alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
@@ -144,7 +151,7 @@ public class ArbreMinimax {
 	        }
 			
 		}
-    	System.out.println("===================================minimax return : "+bestMove.toString());
+    	System.out.println("===================================minimax return :"+bestMove.getCurrentColor()+":"+bestMove.toString());
 		
 		return bestMove;
 	}

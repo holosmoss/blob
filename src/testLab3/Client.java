@@ -238,12 +238,10 @@ class Client {
 		//the ID is the index of the piece in its color arrayList
 		if(val == 3 || val == 4){
 			Piece piece = new Piece(val, x, y, id);
-			System.out.println(val+"- "+x+":"+y+" = "+id);
 			whites.put(id, piece);
 			//whites.add(piece);
 		}else{
 			Piece piece = new Piece(val, x, y, id);
-			System.out.println(val+"- "+x+":"+y+" = "+id);
 			blacks.put(id, piece);
 			//blacks.add(piece);
 		}
