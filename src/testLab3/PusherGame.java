@@ -16,6 +16,9 @@ public class PusherGame {
 
     public Move chooseMove(){
     	//ask the minimax to return the best move extrapolated from the current realBoardState
+    	Client.print("?????? choooooooose from ");
+    	Client.realBoardState.affichageGrille();
+    	Client.print("?????????????");
     	Move bestMove = this.minimaxTree.getBestMove(Client.realBoardState);
     	return bestMove;
     }
