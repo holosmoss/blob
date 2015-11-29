@@ -13,9 +13,37 @@ public class Evaluateur {
 	
 	 //TODO this is juste for test
     private int incrementLeaf = 1;
+    
 	//valeur des couleurs des joueurs
 	static final int WHITE = 1;
 	static final int BLACK = 2;
+	
+	static final int DIR_WHITE = -1;
+	static final int DIR_BLACK = 1;
+	
+	//multiplicateur pour les lignes, utile pour 
+	//évaluer les moves en profondeur sur le board
+	
+	//utilise ROW_X_WHITE
+    private static final int ROW_0_BLACK = 1;
+    private static final int ROW_1_BLACK = 1;
+    private static final int ROW_2_BLACK = 2;
+    private static final int ROW_3_BLACK = 5;
+    private static final int ROW_4_BLACK = 10;
+    private static final int ROW_5_BLACK = 100;
+    private static final int ROW_6_BLACK = 1000;
+    private static final int ROW_7_BLACK = 10000;
+    
+    private static final int ROW_0_WHITE = 10000;
+    private static final int ROW_1_WHITE = 1000;
+    private static final int ROW_2_WHITE = 100;
+    private static final int ROW_3_WHITE = 10;
+    private static final int ROW_4_WHITE = 5;
+    private static final int ROW_5_WHITE = 2;
+    private static final int ROW_6_WHITE = 1;
+    private static final int ROW_7_WHITE = 1;
+    
+    private static final int EAT_SCORE = 1000;
 	
 	
 	
@@ -132,6 +160,30 @@ public class Evaluateur {
 		
 	}
 	
+	/**
+	 * Méthode qui va regarder les coordonnées X et Y d'un move pour
+	 * déterminer si ce dernier manger
+	 * @param state - état du board avant le move
+	 * @param move - move à évaluer
+	 * @param color - couleur du joueur
+	 * @return score associé au move
+	 */
+	public int canEat(BoardState state, Move move, int color){
+		int score = 0;
+		
+		int toX = move.getToColumn(); 
+		int	toY = move.getToRow();
+		
+		if( state.isMoveEating(toX, toY, color) ){			
+			score = EAT_SCORE*rowMultiplier(toY,color);
+			move.setScore(score);
+		}		
+
+		
+		return score;
+	}
+
+	
 	//méthode qui recoit le boardState et une liste de move, qu'on peut changer l'ordre par la suite
 	public List<Move> sortMoveList(List<Move> moveList, BoardState boardState){
 		List<Move> tmpList = new ArrayList<Move>();
@@ -146,5 +198,57 @@ public class Evaluateur {
 		
 		return 0;
 	}
+	
+	/**
+	 * Méthode pour interpretté les constante multiplicateur des lignes
+	 * @param row - la ligne ou on ce trouve
+	 * @param color - la couleur du joueur
+	 * @return le multiplicateur correspondant
+	 */
+	private int rowMultiplier(int row, int color){
+        if(color == WHITE) {
+            switch (row){
+                case 0:
+                    return ROW_0_WHITE;
+                case 1:
+                    return ROW_1_WHITE;
+                case 2:
+                    return ROW_2_WHITE;
+                case 3:
+                    return ROW_3_WHITE;
+                case 4:
+                    return ROW_4_WHITE;
+                case 5:
+                    return ROW_5_WHITE;
+                case 6:
+                    return ROW_6_WHITE;
+                case 7:
+                    return ROW_7_WHITE;
+                default:
+                    return 1;
+            }
+        }else{
+            switch (row){
+                case 0:
+                    return ROW_0_BLACK;
+                case 1:
+                    return ROW_1_BLACK;
+                case 2:
+                    return ROW_2_BLACK;
+                case 3:
+                    return ROW_3_BLACK;
+                case 4:
+                    return ROW_4_BLACK;
+                case 5:
+                    return ROW_5_BLACK;
+                case 6:
+                    return ROW_6_BLACK;
+                case 7:
+                    return ROW_7_BLACK;
+                default:
+                    return 1;
+            }
+        }
+    }
 
 }
