@@ -119,7 +119,7 @@ public class Move implements Comparable<Move>{
     public int compareTo(Move move){
         if(this.score == move.getScore()){
             return 0;
-        }else if(this.score > move.getScore()){
+        }else if(this.score < move.getScore()){
             return 1;
         }else{
             return -1;
