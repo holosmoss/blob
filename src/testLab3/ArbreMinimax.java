@@ -42,14 +42,20 @@ public class ArbreMinimax {
     	/* 
     	 * 	
     	 * TODO use the timer to control what happens at max time
-    	 *if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
-            return Integer.MIN_VALUE;
-        }
+    	 *
     	 *
     	 *
     	 *TODO currentPlayer is knowable from the Move currentColor and the client ourcolor...
     	 *
     	 */
+		//Client.print("~~~~~~!!!!~~~~~ time elapsed  "+(System.currentTimeMillis() - startTime));
+    	if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
+    		//TODO what do we return ?
+            //Client.print("time out "+alpha);
+    		return alpha;
+        }
+    	
+    	
     	boolean maxNode;
     	int nextColor;
 		if(move.getCurrentColor() == Client.color){
@@ -111,7 +117,7 @@ public class ArbreMinimax {
     			alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
                 {
-            		Client.print("----alphaBeta  : pruned!  max "+beta);
+            		//Client.print("----alphaBeta  : pruned!  max "+beta);
                 	//TODO do we return alpha or beta ?
                     return beta;
                 }
@@ -125,7 +131,7 @@ public class ArbreMinimax {
                 //lastState.affichageGrille();
     			beta = Math.min(beta, alphaBeta(tempState, child, depth - 1, alpha, beta));
                 if (beta <= alpha) {
-                	Client.print("----alphaBeta  : pruned!  min "+alpha);
+                	//Client.print("----alphaBeta  : pruned!  min "+alpha);
                 	//TODO do we return alpha or beta ?
                     return alpha; 
                 }
@@ -149,7 +155,7 @@ public class ArbreMinimax {
 		int bestScore = Integer.MIN_VALUE;
 		Move bestMove = null;
 		//TODO find the best places to check time
-		//this.startTime = System.currentTimeMillis();
+		this.startTime = System.currentTimeMillis();
 		//TODO this always start with our color right ?
 		ArrayList<Move> possibleMoves = gene.generateurMouvement(currentState, Client.color);
 		
@@ -166,7 +172,7 @@ public class ArbreMinimax {
 			//TODO is the way to decide if max a true false for currentPlayer ? 
 			//TODO do we give the current State ? or a tempstate ?
 			//MAX_DEPTH
-			alpha = Math.max(alpha, alphaBeta(currentState, move, 4,  alpha,beta));
+			alpha = Math.max(alpha, alphaBeta(currentState, move, 9,  alpha,beta));
 			if(alpha > bestScore)
 	        {
 	            bestMove = move;
