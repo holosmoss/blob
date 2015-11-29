@@ -60,7 +60,7 @@ public class BoardState {
 		Piece pieceMoved;
 		int pieceMovedID = change.getPieceID();
 		//affichageGrille();
-		//Client.print("updateBoard-=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
+		//Client.print(pieceMovedID+" updateBoard -=-=-=-==--=-=-=-= :"+change.getCurrentColor()+": "+change.getToColumn()+"."+change.getToRow());
 		if(change.getCurrentColor() == Client.WHITE){
 			
 			pieceMoved = this.whitePieces.get(pieceMovedID);
@@ -81,11 +81,9 @@ public class BoardState {
 		}else{
 			
 			pieceMoved = this.blackPieces.get(pieceMovedID);
-			
 			//change position in our internal black array
 			this.blackPieces.get(pieceMovedID).setCol(change.getToColumn());
 			this.blackPieces.get(pieceMovedID).setRow(change.getToRow());
-			//Client.print("update 2");
 
 			if( isMoveEating(change.getToColumn(), change.getToRow(), Client.BLACK) ){
 				//Client.print(">>>>>>>>>>>"+pieceMoved.getValeur()+" mange "+state[change.getToColumn()][change.getToRow()]+" with ID "+getPieceID(change.getToColumn(), change.getToRow(), Client.WHITE));
@@ -118,7 +116,7 @@ public class BoardState {
 		for(Entry<Integer, Piece> entry : hashMap.entrySet()) {
 		    int key = entry.getKey();
 		    Piece value = entry.getValue();
-		    //Client.print(key+"~ x:"+value.getCol()+"~y:"+value.getRow());
+		   // Client.print(key+"~ x:"+value.getCol()+"~y:"+value.getRow());
 		    if(value.getCol() == x && value.getRow() == y){
 		    	return value.getID();
 		    }

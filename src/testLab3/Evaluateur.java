@@ -11,7 +11,8 @@ public class Evaluateur {
 	private Generateur gene;
 	private int playerColor;
 	
-	
+	 //TODO this is juste for test
+    private int incrementLeaf = 1;
 	//valeur des couleurs des joueurs
 	static final int WHITE = 1;
 	static final int BLACK = 2;
