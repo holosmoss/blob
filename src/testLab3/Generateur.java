@@ -117,7 +117,7 @@ public class Generateur {
 		    	}
 		    	break;
 		    case 3:
-//		    	Client.print("----poussable Blanc");
+		    	//Client.print("----poussable Blanc");
 		    	//poussable blanc
 		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.WHITE, 1)){
 		    		//diag à droite xmod = 1
@@ -139,6 +139,7 @@ public class Generateur {
 							 Client.WHITE);
 		    		moveList.add(diagMoin);
 		    	}
+		    	//Client.print("---- forward ! "+canBePush(state, piece.getCol(), piece.getRow(), Client.WHITE, 0)+"  ---  "+isBlocked(state,piece.getCol(), piece.getRow(), Client.WHITE));
 		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.WHITE, 0) && !isBlocked(state,piece.getCol(), piece.getRow(), Client.WHITE)){
 		    		//forward is a possible move
 		    		Move forward = new Move(piece.getRow(),
@@ -270,17 +271,25 @@ public class Generateur {
 			//white pushy
 			//Client.print("out of bound ? "+isOutOfBound(col, row, xmod, color));
 			
-			if( isOutOfBound(col, row, xmod, color) )
-				return false;
-			else if( board[col+xmod][row-1] == 3 || board[col+xmod][row-1] == 4 ){
-				//is blocked by one of its color
-				return false;
-			}else if(col-xmod > 0 && col-xmod < 7 && board[col-xmod][row+1] == 4){
-				//has a pusher to push to xModified -1y
-				return true;
-			}else{
+			if( isOutOfBound(col, row, xmod, color) ){
 				return false;
 			}
+
+			if( board[col+xmod][row-1] == 3 || board[col+xmod][row-1] == 4 ){
+				//is blocked by one of its color
+				return false;
+			}
+
+			if(col-xmod >= 0 && col-xmod <= 7 ){ 
+				//Client.print("what is behind me col/row"+(col-xmod)+"/"+(row+1)+" == "+board[col-xmod][row+1]);
+					if(board[col-xmod][row+1] == 4){
+						//has a pusher to push to xModified -1y
+						return true;
+					}
+				
+			}
+			return false;
+			
 		}else{
 			//Black pushy
 			
@@ -289,7 +298,7 @@ public class Generateur {
 			else if(board[col+xmod][row+1] == 1 || board[col+xmod][row+1] == 2 ){
 				//is blocked by one of its color
 				return false;
-			}else if(col-xmod > 0 && col-xmod < 7 &&  board[col-xmod][row-1] == 2){
+			}else if(col-xmod >= 0 && col-xmod <= 7 &&  board[col-xmod][row-1] == 2){
 				//has a pusher to push to xModified +1y
 				return true;
 			}else{
