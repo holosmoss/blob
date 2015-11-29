@@ -149,7 +149,7 @@ public class ArbreMinimax {
 		//this.startTime = System.currentTimeMillis();
 		//TODO this always start with our color right ?
 		ArrayList<Move> possibleMoves = gene.generateurMouvement(currentState, Client.color);
-		
+		Client.print("we found "+possibleMoves.size()+" possible moves");
 		for(Move move : possibleMoves){
 			//Loop the 1st gen moves to find the one which result in the best score
 			if(bestMove == null){
