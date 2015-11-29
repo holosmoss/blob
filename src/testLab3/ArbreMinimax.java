@@ -15,8 +15,8 @@ public class ArbreMinimax {
 	static final int MAX_DEPTH = 6; //profondeur de recherche max plus c'est grand
 									//plus c'est précis, mais prendra plus de temps
     static final int TEMPS_MAX = 4900; // temps max en millisecondes
-
-
+    //TODO this is juste for test
+    private int incrementLeaf = 1;
     /*
      * Constructeur par defaut
      */
@@ -36,6 +36,7 @@ public class ArbreMinimax {
      * @param beta
      * @return
      */
+    
     public int alphaBeta(BoardState lastState, Move move, int depth, int alpha, int beta) {
     	/* 
     	 * 	
@@ -59,30 +60,33 @@ public class ArbreMinimax {
     		nextColor = Client.color;
     		//Client.print("alphabeta MIN at"+depth);
     	}
-    	Client.print("-------------alphabeta--isMax : "+maxNode+"-------------------------------------profondeur : "+depth);
+    	Client.print("tempState----alphabeta--isMax : "+maxNode+"------------profondeur : "+depth);
 
     	//System.out.println("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode);
 
-    	
+    	lastState.affichageGrille();
     	//generate the new BoardState for our move : and generate the moves from that boardState.
     	BoardState tempState = new BoardState(lastState,move);
-    	
+    	//TODO pour tets
+    	tempState.affichageGrille();
     	//TODO is the eval in the minimax just for this ?
     	//TODO or is the boardstate the one that should do this ?
     	//Eval if we are in a game ending state.
     	int endingValue = eval.isGameFinish(tempState, Client.color);
     	if( endingValue != 0){
     		//we have either lost or won with this move. return its value since its a leaf
+    		Client.print("END --- "+endingValue);
     		return endingValue;
     	}
     	//verify depth
     	if(depth == 0){
     		//we reached the max depth of the tree
     		//evaluate current move as a leaf and return its value
-    		Random rand = new Random();
-    		int randomNum = rand.nextInt((100-50)+1)-50;
+    		incrementLeaf = incrementLeaf+1;
     		//System.out.println("----alphaBeta  : Leaf ! "+randomNum);
-    		return randomNum;//eval.leafValue(tempState);
+    		Client.print("END leaf --- "+incrementLeaf);
+
+    		return incrementLeaf;//eval.leafValue(tempState);
     	}
     	//we are not at the end of the tree so lets generate an other generation
     	//TODO use a test list (hardcoded moves for us and them(we need to know the active player));
@@ -123,7 +127,9 @@ public class ArbreMinimax {
 	 * @return BestMove - le meilleur coup déterminer par l'arbre minMaxAlphaBeta
 	 */
 	public Move getBestMove(BoardState currentState){
-		System.out.println("===================================minimax getBestMove :");
+		Client.print("===================================minimax getBestMove :");
+    	//TODO pour tets
+		currentState.affichageGrille();
 		//TODO we could just reference the client real state here right ???
 		int alpha = Integer.MIN_VALUE;
 		int beta = Integer.MAX_VALUE;
