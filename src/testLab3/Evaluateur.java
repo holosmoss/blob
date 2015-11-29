@@ -1,6 +1,8 @@
 package testLab3;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -27,7 +29,7 @@ public class Evaluateur {
 	//utilise ROW_X_WHITE
     private static final int ROW_0_BLACK = 1;
     private static final int ROW_1_BLACK = 1;
-    private static final int ROW_2_BLACK = 2;
+    private static final int ROW_2_BLACK = 1;
     private static final int ROW_3_BLACK = 5;
     private static final int ROW_4_BLACK = 10;
     private static final int ROW_5_BLACK = 100;
@@ -39,11 +41,12 @@ public class Evaluateur {
     private static final int ROW_2_WHITE = 100;
     private static final int ROW_3_WHITE = 10;
     private static final int ROW_4_WHITE = 5;
-    private static final int ROW_5_WHITE = 2;
+    private static final int ROW_5_WHITE = 1;
     private static final int ROW_6_WHITE = 1;
     private static final int ROW_7_WHITE = 1;
     
     private static final int EAT_SCORE = 1000;
+    private static final int BASIC_SCORE = 10;
 	
 	
 	
@@ -162,7 +165,8 @@ public class Evaluateur {
 	
 	/**
 	 * Méthode qui va regarder les coordonnées X et Y d'un move pour
-	 * déterminer si ce dernier manger
+	 * déterminer si ce dernier mange, sinon retourne un score normal
+	 * Le score est multiplier par la constante de ligne
 	 * @param state - état du board avant le move
 	 * @param move - move à évaluer
 	 * @param color - couleur du joueur
@@ -174,22 +178,61 @@ public class Evaluateur {
 		int toX = move.getToColumn(); 
 		int	toY = move.getToRow();
 		
+		//si on peut manger
 		if( state.isMoveEating(toX, toY, color) ){			
 			score = EAT_SCORE*rowMultiplier(toY,color);
 			move.setScore(score);
-		}		
-
+		}
+		//sinon c'est un move normal
+		else{
+			score = BASIC_SCORE*rowMultiplier(toY,color);
+			move.setScore(score);
+		}
 		
 		return score;
 	}
 
 	
-	//méthode qui recoit le boardState et une liste de move, qu'on peut changer l'ordre par la suite
-	public List<Move> sortMoveList(List<Move> moveList, BoardState boardState){
-		List<Move> tmpList = new ArrayList<Move>();
+	/**
+	 * Méthode qui reçoit une liste de move, elle leur attribut des score
+	 * En suite la liste est trié
+	 * @param moveList
+	 * @param state
+	 * @param color
+	 * @return
+	 */
+	public ArrayList<Move> sortMoveList(ArrayList<Move> moveList, BoardState state, int color){
+		ArrayList<Move> sortedList = moveList;
+		int tmpScore = 0;
+		
+		//boucle qui attribut un score au move de la list
+		for(int i = 0; i<sortedList.size(); i++){
+			tmpScore = giveScore(state,  sortedList.get(i), color);
+			sortedList.get(i).setScore(tmpScore);
+		}
+		
+		//tri la liste care les Move implemente "Comparable"
+		Collections.sort(sortedList);
 		
 		
-		return tmpList;
+		return sortedList;
+	}
+	
+	private int giveScore(BoardState state, Move move, int color){
+		
+		int score = isGameFinish(state, color);
+		
+		//check si ce move terminerais la game, we never know !
+		if( score != 0 ){
+			return score;
+		}
+		//sinon il s'agit d'un move normal ou qui mange
+		else{
+			score = canEat(state, move, color);
+			return score;
+		}
+		
+		
 	}
 	
 	

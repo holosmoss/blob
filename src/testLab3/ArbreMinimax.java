@@ -95,6 +95,9 @@ public class ArbreMinimax {
     	//TODO the move.GetCurrentcolor needs to change created as the proper type so the inverse of our current color ?
     	ArrayList<Move> childs = gene.generateurMouvement(tempState,nextColor);
     	
+    	//attribut les scores des moves et les tris ICI
+    	childs = this.eval.sortMoveList(childs, tempState, Client.color);
+    	
     	
     	if(maxNode){
     		//TODO eval should order them (differently for min max ??)
@@ -149,7 +152,11 @@ public class ArbreMinimax {
 		//this.startTime = System.currentTimeMillis();
 		//TODO this always start with our color right ?
 		ArrayList<Move> possibleMoves = gene.generateurMouvement(currentState, Client.color);
-		Client.print("we found "+possibleMoves.size()+" possible moves");
+		
+		//tri la list selon le score de chaque move, 
+		//c'est ici qu'on attribut un score à nos move
+		possibleMoves = this.eval.sortMoveList(possibleMoves, currentState, Client.color);
+		
 		for(Move move : possibleMoves){
 			//Loop the 1st gen moves to find the one which result in the best score
 			if(bestMove == null){
@@ -159,7 +166,7 @@ public class ArbreMinimax {
 			//TODO is the way to decide if max a true false for currentPlayer ? 
 			//TODO do we give the current State ? or a tempstate ?
 			//MAX_DEPTH
-			alpha = Math.max(alpha, alphaBeta(currentState, move, 2,  alpha,beta));
+			alpha = Math.max(alpha, alphaBeta(currentState, move, 4,  alpha,beta));
 			if(alpha > bestScore)
 	        {
 	            bestMove = move;
