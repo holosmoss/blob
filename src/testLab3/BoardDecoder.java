@@ -135,7 +135,6 @@ public class BoardDecoder {
 		strTmp = s.replaceAll("[^a-zA-Z0-9\\s]", "");
 		strTmp = strTmp.replaceAll(" +", "");
 	
-
 		coord[0] = decodeColToInt( strTmp.charAt(0) );// fromCol
 		coord[1] = decodeRowToInt( Character.getNumericValue( strTmp.charAt(1) ) );// fromRow
 		coord[2] = decodeColToInt( strTmp.charAt(2) );// toCol

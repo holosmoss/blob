@@ -186,7 +186,9 @@ class Client {
 					
 					// Update le realBoardState avec le move adverse
 					int id = realBoardState.getPieceID(coord[0], coord[1], enemyColor);
-					Move newMove = new Move(coord[0], coord[1], coord[2], coord[3],id,enemyColor);
+					//TODO test lordre des coord
+					Move newMove = new Move(coord[1], coord[0], coord[3], coord[2],id,enemyColor);
+					print("><><><<>"+id+" enemy Move from col/row::: "+coord[1]+","+coord[0]+ ".. TO :::"+coord[3]+","+coord[2]);
 					realBoardState.updateBoard(newMove);
 			       	System.out.println("Entrez votre coup : ");
 			       	//envoie notre prochain coup

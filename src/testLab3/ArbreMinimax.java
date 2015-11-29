@@ -137,7 +137,7 @@ public class ArbreMinimax {
 	public Move getBestMove(BoardState currentState){
 		Client.print("===================================minimax getBestMove :");
     	//TODO pour tets
-		currentState.affichageGrille();
+		//currentState.affichageGrille();
 		//TODO we could just reference the client real state here right ???
 		int alpha = Integer.MIN_VALUE;
 		int beta = Integer.MAX_VALUE;
