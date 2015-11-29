@@ -17,6 +17,7 @@ public class ArbreMinimax {
     static final int TEMPS_MAX = 4900; // temps max en millisecondes
     //TODO this is juste for test
     private int incrementLeaf = 1;
+    private int decrementLeaf = Integer.MAX_VALUE;
     /*
      * Constructeur par defaut
      */
@@ -86,8 +87,8 @@ public class ArbreMinimax {
     		incrementLeaf = incrementLeaf+1;
     		//System.out.println("----alphaBeta  : Leaf ! "+randomNum);
     		//Client.print("END leaf --- "+incrementLeaf);
-
-    		return incrementLeaf;//eval.leafValue(tempState);
+    		decrementLeaf = decrementLeaf-1;
+    		return incrementLeaf;//incrementLeaf;//eval.leafValue(tempState);
     	}
     	//we are not at the end of the tree so lets generate an other generation
     	//TODO use a test list (hardcoded moves for us and them(we need to know the active player));
@@ -107,7 +108,7 @@ public class ArbreMinimax {
     			alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
                 {
-            		//System.out.println("----alphaBeta  : pruned!  max");
+            		Client.print("----alphaBeta  : pruned!  max "+beta);
                 	//TODO do we return alpha or beta ?
                     return beta;
                 }
@@ -121,7 +122,7 @@ public class ArbreMinimax {
                 //lastState.affichageGrille();
     			beta = Math.min(beta, alphaBeta(tempState, child, depth - 1, alpha, beta));
                 if (beta <= alpha) {
-            		//System.out.println("----alphaBeta  : pruned!  min");
+                	Client.print("----alphaBeta  : pruned!  min "+alpha);
                 	//TODO do we return alpha or beta ?
                     return alpha; 
                 }
@@ -136,6 +137,7 @@ public class ArbreMinimax {
 	 */
 	public Move getBestMove(BoardState currentState){
 		Client.print("===================================minimax getBestMove :");
+		currentState.affichageGrille();
     	//TODO pour tets
 		//currentState.affichageGrille();
 		//TODO we could just reference the client real state here right ???

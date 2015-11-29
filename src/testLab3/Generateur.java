@@ -72,7 +72,7 @@ public class Generateur {
 							 Client.BLACK);
 		    		moveList.add(diagMoin);
 		    	}
-		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.BLACK, 0)){
+		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.BLACK, 0) && !isBlocked(state,piece.getCol(), piece.getRow(), Client.BLACK)){
 		    		//forward is a possible move
 		    		Move forward = new Move(piece.getRow(),
 							 piece.getCol(),
@@ -139,7 +139,7 @@ public class Generateur {
 							 Client.WHITE);
 		    		moveList.add(diagMoin);
 		    	}
-		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.WHITE, 0)){
+		    	if(canBePush(state, piece.getCol(), piece.getRow(), Client.WHITE, 0) && !isBlocked(state,piece.getCol(), piece.getRow(), Client.WHITE)){
 		    		//forward is a possible move
 		    		Move forward = new Move(piece.getRow(),
 							 piece.getCol(),
@@ -207,6 +207,7 @@ public class Generateur {
 
 		//change the row modifier based on color
 		int ymod = (color ==Client.WHITE) ? 1 : -1;
+		//Client.print("isBlocked???????????????????    :: at col "+col+" row "+(row-ymod)+" = "+board[col][row-ymod] );
 		if(board[col][row-ymod] != 0){
 			//s'il y a un pion en avant de nous
 			return true;
