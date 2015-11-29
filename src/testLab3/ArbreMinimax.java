@@ -63,11 +63,12 @@ public class ArbreMinimax {
     	Client.print("tempState----alphabeta--isMax : "+maxNode+"------------profondeur : "+depth);
 
     	//System.out.println("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode);
-
+    	Client.print("the received state : ");
     	lastState.affichageGrille();
     	//generate the new BoardState for our move : and generate the moves from that boardState.
     	BoardState tempState = new BoardState(lastState,move);
     	//TODO pour tets
+    	Client.print("the changed state : ");
     	tempState.affichageGrille();
     	//TODO is the eval in the minimax just for this ?
     	//TODO or is the boardstate the one that should do this ?
@@ -100,7 +101,10 @@ public class ArbreMinimax {
     		for(Move child : childs){
     			//Client.print(child.getCurrentColor()+" color! "+depth);
     			//check for the 
-                alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
+    			//TODO test creating a new temp boardState for the next gen which is our parent state with the parent move applied
+                Client.print(">>>>>>>parent depth "+depth);
+                lastState.affichageGrille();
+    			alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
                 {
             		//System.out.println("----alphaBeta  : pruned!  max");
@@ -111,7 +115,11 @@ public class ArbreMinimax {
     		return alpha;
     	}else{
     		for (Move child : childs) {
-                beta = Math.min(beta, alphaBeta(tempState, child, depth - 1, alpha, beta));
+    			//TODO test creating a new temp boardState for the next gen which is our parent state with the parent move applied
+    			//TODO instead of tempState used to generate the moves 
+                Client.print(">>>>>>>parent depth "+depth);
+                lastState.affichageGrille();
+    			beta = Math.min(beta, alphaBeta(tempState, child, depth - 1, alpha, beta));
                 if (beta <= alpha) {
             		//System.out.println("----alphaBeta  : pruned!  min");
                 	//TODO do we return alpha or beta ?

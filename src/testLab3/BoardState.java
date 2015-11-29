@@ -17,9 +17,29 @@ public class BoardState {
 	}
 
 	public BoardState(BoardState origin, Move change){
-		this.whitePieces = origin.whitePieces;
-		this.blackPieces = origin.blackPieces;
-		this.state = origin.getState();
+		// deep copy all values
+		this.whitePieces = new HashMap<Integer,Piece>();
+		this.blackPieces = new HashMap<Integer,Piece>();
+		this.state = new int[8][8];
+		for(Entry<Integer, Piece> entry : origin.whitePieces.entrySet()) {
+			int key = entry.getKey();
+			Piece piece = entry.getValue();
+			Piece newPiece = new Piece(piece.getValeur(), piece.getCol(), piece.getRow(), piece.getID());
+			this.whitePieces.put(key, newPiece);
+		}
+		for(Entry<Integer, Piece> entry : origin.blackPieces.entrySet()) {
+			int key = entry.getKey();
+			Piece piece = entry.getValue();
+			Piece newPiece = new Piece(piece.getValeur(), piece.getCol(), piece.getRow(), piece.getID());
+			this.blackPieces.put(key, newPiece);
+		}
+		for (int row = 0; row < 8; row++) 
+		{
+			for (int col = 0; col < 8; col++){
+				this.state[col][row] = origin.getState()[col][row];
+			}
+		}
+		//and update new board
 		updateBoard(change);
 	}
 
