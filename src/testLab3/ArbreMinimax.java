@@ -60,16 +60,16 @@ public class ArbreMinimax {
     		nextColor = Client.color;
     		//Client.print("alphabeta MIN at"+depth);
     	}
-    	Client.print("tempState----alphabeta--isMax : "+maxNode+"------------profondeur : "+depth);
+    	//Client.print("tempState----alphabeta--isMax : "+maxNode+"------------profondeur : "+depth);
 
     	//System.out.println("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode);
-    	Client.print("the received state : ");
-    	lastState.affichageGrille();
+    	//Client.print("the received state : ");
+    	//lastState.affichageGrille();
     	//generate the new BoardState for our move : and generate the moves from that boardState.
     	BoardState tempState = new BoardState(lastState,move);
     	//TODO pour tets
-    	Client.print("the changed state : ");
-    	tempState.affichageGrille();
+    	//Client.print("the changed state : ");
+    	//tempState.affichageGrille();
     	//TODO is the eval in the minimax just for this ?
     	//TODO or is the boardstate the one that should do this ?
     	//Eval if we are in a game ending state.
@@ -85,7 +85,7 @@ public class ArbreMinimax {
     		//evaluate current move as a leaf and return its value
     		incrementLeaf = incrementLeaf+1;
     		//System.out.println("----alphaBeta  : Leaf ! "+randomNum);
-    		Client.print("END leaf --- "+incrementLeaf);
+    		//Client.print("END leaf --- "+incrementLeaf);
 
     		return incrementLeaf;//eval.leafValue(tempState);
     	}
@@ -102,8 +102,8 @@ public class ArbreMinimax {
     			//Client.print(child.getCurrentColor()+" color! "+depth);
     			//check for the 
     			//TODO test creating a new temp boardState for the next gen which is our parent state with the parent move applied
-                Client.print(">>>>>>>parent depth "+depth);
-                lastState.affichageGrille();
+                //Client.print(">>>>>>>parent depth "+depth);
+                //lastState.affichageGrille();
     			alpha = Math.max(alpha, alphaBeta(tempState, child, depth - 1, alpha, beta) );
                 if(alpha >= beta)
                 {
@@ -117,8 +117,8 @@ public class ArbreMinimax {
     		for (Move child : childs) {
     			//TODO test creating a new temp boardState for the next gen which is our parent state with the parent move applied
     			//TODO instead of tempState used to generate the moves 
-                Client.print(">>>>>>>parent depth "+depth);
-                lastState.affichageGrille();
+                //Client.print(">>>>>>>parent depth "+depth);
+                //lastState.affichageGrille();
     			beta = Math.min(beta, alphaBeta(tempState, child, depth - 1, alpha, beta));
                 if (beta <= alpha) {
             		//System.out.println("----alphaBeta  : pruned!  min");

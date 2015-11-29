@@ -188,18 +188,13 @@ class Client {
 					int id = realBoardState.getPieceID(coord[0], coord[1], enemyColor);
 					Move newMove = new Move(coord[0], coord[1], coord[2], coord[3],id,enemyColor);
 					realBoardState.updateBoard(newMove);
-					
-					
-					
-					//notre liste est updaté dans l'évaluateur
-					
 			       	System.out.println("Entrez votre coup : ");
-			       	
 			       	//envoie notre prochain coup
-			       	
 			        move = game.chooseMove();
 			       	moveString = move.toString();
 					
+			       	//update our board
+	                realBoardState.updateBoard(move);
 			    	//TODO update RealBoardState
 					//move = console.readLine();
 					output.write(moveString.getBytes(),0,moveString.length());
