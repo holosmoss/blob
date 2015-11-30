@@ -34,9 +34,9 @@ public class Evaluateur {
     private static final int ROW_4_BLACK = 5;
     private static final int ROW_5_BLACK = 6;
     private static final int ROW_6_BLACK = 7;
-    private static final int ROW_7_BLACK = 10000;
+    private static final int ROW_7_BLACK = 100;
     
-    private static final int ROW_0_WHITE = 10000;
+    private static final int ROW_0_WHITE = 100;
     private static final int ROW_1_WHITE = 7;
     private static final int ROW_2_WHITE = 6;
     private static final int ROW_3_WHITE = 5;
@@ -45,9 +45,9 @@ public class Evaluateur {
     private static final int ROW_6_WHITE = 2;
     private static final int ROW_7_WHITE = 1;
     
-    private static final int COL_A = 4;
-    private static final int COL_B = 3;
-    private static final int COL_C = 2;
+    private static final int COL_A = 3;
+    private static final int COL_B = 4;
+    private static final int COL_C = 3;
     private static final int COL_D = 2;
     private static final int COL_E = 2;
     private static final int COL_F = 2;
@@ -55,7 +55,7 @@ public class Evaluateur {
     private static final int COL_H = 4;
     
     private static final int EAT_SCORE = 8888; // ate ate ate ate xD
-    private static final int DANGER_SCORE = -4444;
+    private static final int DANGER_SCORE = -6666;
     private static final int BASIC_SCORE = 1;
     private static final int PUSHER_SCORE = 10;
     private static final int PUSHY_SCORE = 5;
@@ -186,7 +186,7 @@ public class Evaluateur {
 	 */
 	public int canEat(BoardState state, Move move, int color){
 		int score = 0;
-		int type = 0;
+		int type = 1;
 		int[][] tmpState = state.getState();
 		int toX = move.getToColumn(); 
 		int	toY = move.getToRow();
@@ -194,22 +194,28 @@ public class Evaluateur {
 		type = tmpState[move.getFromColumn()][move.getFromRow()];
 		
 		if(type%2 == 0){ // alors c'est un pusher
-			type = PUSHER_SCORE; //on attribut plus de valeur au pusher
+			type = PUSHER_SCORE; //on attribut plus de valeur au pusher pour un basic move
 		}
 		else{
-			type = PUSHY_SCORE;
+			type = PUSHY_SCORE; //un pushy est priorisé sur le mangeage
 		}
 				
 		
 		//si on peut manger
-		if( state.isMoveEating(toX, toY, color) ){			
-			score = EAT_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);
+		if( state.isMoveEating(toX, toY, color) ){
+			
+			if(type == PUSHY_SCORE){ //priorise un mangeage avec pushy car moins dangereux
+				score = EAT_SCORE*(rowMultiplier(toY,color)*colMultiplier(toX)*type);
+			}
+			else{
+				score = EAT_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);
+			}
 			move.setScore(score);
-			//System.out.println("#############"+score+"#############");
+			
 		}
 		//sinon c'est un move normal
 		else{
-			score = BASIC_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);
+			score = BASIC_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);			
 			move.setScore(score);
 		}
 		
@@ -327,6 +333,9 @@ public class Evaluateur {
 		}
 		//check si la position du move serait dangereuse
 		if( isNextPositionDangerous(state, move, color) ){
+			//mange même si c'est dangereux, un peu suicidaire...
+			if( (score = canEat(state, move, color) ) > EAT_SCORE )
+				return score;
 			
 			return score = DANGER_SCORE;
 		}

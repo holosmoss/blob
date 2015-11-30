@@ -14,7 +14,7 @@ public class ArbreMinimax {
 	
 	static final int MAX_DEPTH = 9; //profondeur de recherche max plus c'est grand
 									//plus c'est précis, mais prendra plus de temps
-    static final int TEMPS_MAX = 1900; // temps max en millisecondes
+    static final int TEMPS_MAX = 4900; // temps max en millisecondes
     //TODO this is juste for test
     private int incrementLeaf = 1;
     private int decrementLeaf = Integer.MAX_VALUE;
