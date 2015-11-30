@@ -26,7 +26,7 @@ public class Evaluateur {
 	//multiplicateur pour les lignes, utile pour 
 	//évaluer les moves en profondeur sur le board
 	
-	//utilise ROW_X_WHITE
+	
     private static final int ROW_0_BLACK = 1;
     private static final int ROW_1_BLACK = 2;
     private static final int ROW_2_BLACK = 3;
