@@ -28,21 +28,21 @@ public class Evaluateur {
 	
 	//utilise ROW_X_WHITE
     private static final int ROW_0_BLACK = 1;
-    private static final int ROW_1_BLACK = 1;
-    private static final int ROW_2_BLACK = 1;
+    private static final int ROW_1_BLACK = 2;
+    private static final int ROW_2_BLACK = 3;
     private static final int ROW_3_BLACK = 5;
-    private static final int ROW_4_BLACK = 10;
-    private static final int ROW_5_BLACK = 100;
-    private static final int ROW_6_BLACK = 1000;
+    private static final int ROW_4_BLACK = 6;
+    private static final int ROW_5_BLACK = 7;
+    private static final int ROW_6_BLACK = 8;
     private static final int ROW_7_BLACK = 10000;
     
     private static final int ROW_0_WHITE = 10000;
-    private static final int ROW_1_WHITE = 1000;
-    private static final int ROW_2_WHITE = 100;
-    private static final int ROW_3_WHITE = 10;
+    private static final int ROW_1_WHITE = 8;
+    private static final int ROW_2_WHITE = 7;
+    private static final int ROW_3_WHITE = 6;
     private static final int ROW_4_WHITE = 5;
-    private static final int ROW_5_WHITE = 1;
-    private static final int ROW_6_WHITE = 1;
+    private static final int ROW_5_WHITE = 3;
+    private static final int ROW_6_WHITE = 2;
     private static final int ROW_7_WHITE = 1;
     
     private static final int EAT_SCORE = 1000;
@@ -204,42 +204,228 @@ public class Evaluateur {
 	public ArrayList<Move> sortMoveList(ArrayList<Move> moveList, BoardState state, int color){
 		ArrayList<Move> sortedList = moveList;
 		int tmpScore = 0;
-		
+		if(favoredIdList == null){
+			findFavoredPieces(state);
+		}
 		//boucle qui attribut un score au move de la list
 		for(int i = 0; i<sortedList.size(); i++){
 			tmpScore = giveScore(state,  sortedList.get(i), color);
 			sortedList.get(i).setScore(tmpScore);
 		}
-		
+
 		//tri la liste care les Move implemente "Comparable"
 		Collections.sort(sortedList);
-		
-		
+
 		return sortedList;
+	}
+	private ArrayList<Integer> favoredIdList;
+	//TODO how do we evaluate the enemies ?
+	private ArrayList<Integer> enemyfavoredIdList;
+	private void findFavoredPieces(BoardState state){
+		HashMap<Integer, Piece> ourPieces = (Client.color == Client.WHITE) ? state.getWhitePieces() : state.getBlackPieces();
+		//TODO  will we have to remove them if they get eaten ?
+		//TODO if calling unexisting key in the hashMaps return an error we might
+		favoredIdList = new ArrayList<Integer>();
+		for(Entry<Integer, Piece> entry : ourPieces.entrySet()) {
+			//id of the piece
+		    int key = entry.getKey();
+		    Piece piece = entry.getValue();
+		    if(piece.getCol() < 4){
+		    	//those piece are on the left side of the board which we favor
+		    	//TODO we need to remember their ID to spot them in moves
+		    	//TODO is knowing hteir type usefull or can we just call the ID in the state to find out each time ?
+		    		//is that long anyways.
+		    	favoredIdList.add(key);
+		    	
+		    }
+		}
 	}
 	
 	private int giveScore(BoardState state, Move move, int color){
-		
-		int score = isGameFinish(state, color);
-		
-		//check si ce move terminerais la game, we never know !
-		if( score != 0 ){
-			return score;
+		int score = 0;
+		if(color == Client.color){
+			int movedID = move.getPieceID();
+			HashMap<Integer,Piece> ourPieces = (color == Client.WHITE) ? state.getWhitePieces():state.getBlackPieces();
+			Piece pieceMoved = ourPieces.get(movedID);
+			
+			//Favoritisme pour la gauche
+			if(favoredIdList.contains(movedID)){
+				//+ 10 pts parceque on aime cette piece
+				score += 10;
+				//TODO this test for null is just weird, what happens when a favored piece is eaten
+				if(favoredIdList.get(movedID) != null){
+					if(pieceMoved.getValeur()%2 == 0){
+						//on aime plus les Pushers !
+						score += 10;
+					}
+				}
+			}
+			//Safety first
+			if(isProtected(state, pieceMoved)){
+				//GROS bonus parceque on avance et rest protégé
+				score += 15;
+			}
+			if(isProtecting(state, pieceMoved)){
+				//bonus parceque on prot`ge une de nos pièce
+				score += 10;
+			}
+		}else{
+			//enemy moves
+			//TODO do we keep a favored for them too ? or do we have a mostWanted list or enemyOf the state.
 		}
-		//sinon il s'agit d'un move normal ou qui mange
-		else{
-			score = canEat(state, move, color);
-			return score;
+		return score;
+	}
+	private boolean isProtected(BoardState state, Piece piece){
+		//TODO verify the states pushers behind + pushy that could move to protect
+		//TODO do we want the pushy protection to be less important or is the rest of our heuristic making this redundant
+		int[][] board = state.getState();
+		int ourPusher;
+		int ourPushy;
+		//row behind us
+		int rowMod;
+		if(Client.color == Client.WHITE){
+			ourPusher = 2;
+			ourPushy = 1;
+			rowMod = 1;
+		}else{
+			ourPusher = 4;
+			ourPushy = 3;
+			rowMod = -1;
 		}
-		
-		
+		int rowBehind = piece.getRow()+rowMod;
+		if(rowBehind >= 0 && rowBehind <= 7){
+			//can be protected
+			//check left
+			int leftCol = piece.getCol()-1;
+			if(leftCol >= 0){
+				//still on the board
+				if(board[leftCol][rowBehind] == ourPusher ){
+					return true;//we have a pusher backing us
+				}
+				if(board[leftCol][rowBehind] == ourPushy){
+					//we have a pushy to the left
+					int secondRowBehind = piece.getRow()+(2*rowMod);
+					int secondColLeft = piece.getCol()-2;
+					if(secondColLeft >= 0 && secondRowBehind >= 0 && secondRowBehind <= 7){
+						//still on board
+						if(board[secondColLeft][secondRowBehind] == ourPusher){
+							//that pushy can be pushed to protect
+							return true;
+						}
+					}
+				}
+			}
+			//check right
+			int rightCol = piece.getCol()+1;
+			if(rightCol <= 7){
+				//still on the board
+				//still on the board
+				if(board[rightCol][rowBehind] == ourPusher ){
+					return true;//we have a pusher backing us
+				}
+				if(board[rightCol][rowBehind] == ourPushy){
+					//we have a pushy to the left
+					int secondRowBehind = piece.getRow()+(2*rowMod);
+					int secondColRight = piece.getCol()+2;
+					if(secondColRight <= 7 && secondColRight >= 0 && secondRowBehind <= 7){
+						//still on board
+						if(board[secondColRight][secondRowBehind] == ourPusher){
+							//that pushy can be pushed to protect
+							return true;
+						}
+					}
+				}
+			}
+		}
+		//no one can help
+		return false;
+	}
+	
+	private boolean isProtecting(BoardState state, Piece piece){
+		//TODO check state if we have pieces at our protectable diags
+		return false;
+	}
+	private boolean isSafe(BoardState state, Piece piece){
+		//TODO should this be bool or int return for granularity ?
+		//is there an enemy that can eat us ?
+		int[][] board = state.getState();
+		int theirPusher;
+		int theirPushy;
+		//row in front of us
+		int rowMod;
+		//is there a piece that could eat us
+		boolean canBeEaten = false;
+		if(Client.color == Client.WHITE){
+			theirPusher = 4;
+			theirPushy = 3;
+			rowMod = -1;
+		}else{
+			theirPusher = 2;
+			theirPushy = 1;
+			rowMod = 1;
+		}
+	    int rowInFront = piece.getRow()+rowMod;
+		if(rowInFront >= 0 && rowInFront <= 7){
+			//still on board
+			//check left
+			int leftCol = piece.getCol()-1;
+			if(leftCol >= 0){
+				//still on the board
+				if(board[leftCol][rowInFront] == theirPusher ){
+					canBeEaten = true;//a pusher can eat us
+				}
+				if(board[leftCol][rowInFront] == theirPushy ){
+					//a pushy could eat us
+					int secondLeftCol = piece.getCol()-2;
+					int secondRowInFront = piece.getRow()+(2*rowMod);
+					if(secondLeftCol >= 0 && secondRowInFront >= 0 && secondRowInFront <=7){
+						if(board[secondLeftCol][secondRowInFront] == theirPusher){
+							canBeEaten = true;//the pushy could be pushed to eat
+						}
+					}
+				}
+			}
+			//TODO do we want a double eating value  (could be balanced with double protected value)
+			//check right
+			int rightCol = piece.getCol()+1;
+			if(rightCol <= 7){
+				if(board[rightCol][rowInFront] == theirPusher ){
+					canBeEaten = true;//a pusher can eat us
+				}
+				if(board[rightCol][rowInFront] == theirPushy ){
+					int secondRighttCol = piece.getCol()+2;
+					int secondRowInFront = piece.getRow()+(2*rowMod);
+					if(secondRighttCol <= 7 && secondRowInFront >= 0 && secondRowInFront <=7){
+						if(board[secondRighttCol][secondRowInFront] == theirPusher){
+							canBeEaten = true;//the pushy could be pushed to eat
+						}
+					}
+				}
+			}
+		}
+		//return false if we can be eaten and have no protection
+		if(canBeEaten && !isProtected(state, piece)){
+			return false;
+		}else{
+			return true;
+		}
 	}
 	
 	
 	public int leafValue(BoardState boardState){
+		int score = 0;
+		HashMap<Integer, Piece> ourPieces = (Client.color == Client.WHITE) ? boardState.getWhitePieces() : boardState.getBlackPieces();
 		
-		
-		return 0;
+		for(Entry<Integer, Piece> entry : ourPieces.entrySet()) {
+		    Piece piece = entry.getValue();
+		    if(piece.getValeur()%2 == 0){
+		    	//pusher!
+		    	//TODO do we want the multiplier for unsafe pieces to be 0 so that we avoid moving forward without protection ?
+		    	int safetyMultiplier = (isSafe(boardState, piece))? 2:1;
+		    	score += safetyMultiplier*rowMultiplier(piece.getRow(),Client.color);
+		    }
+		}
+		return score;
 	}
 	
 	/**
