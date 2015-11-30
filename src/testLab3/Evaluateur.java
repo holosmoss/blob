@@ -28,21 +28,21 @@ public class Evaluateur {
 	
 	//utilise ROW_X_WHITE
     private static final int ROW_0_BLACK = 1;
-    private static final int ROW_1_BLACK = 5;
-    private static final int ROW_2_BLACK = 10;
-    private static final int ROW_3_BLACK = 25;
-    private static final int ROW_4_BLACK = 50;
-    private static final int ROW_5_BLACK = 125;
-    private static final int ROW_6_BLACK = 250;
-    private static final int ROW_7_BLACK = 500;
+    private static final int ROW_1_BLACK = 2;
+    private static final int ROW_2_BLACK = 3;
+    private static final int ROW_3_BLACK = 4;
+    private static final int ROW_4_BLACK = 5;
+    private static final int ROW_5_BLACK = 6;
+    private static final int ROW_6_BLACK = 7;
+    private static final int ROW_7_BLACK = 10000;
     
-    private static final int ROW_0_WHITE = 500;
-    private static final int ROW_1_WHITE = 250;
-    private static final int ROW_2_WHITE = 125;
-    private static final int ROW_3_WHITE = 50;
-    private static final int ROW_4_WHITE = 25;
-    private static final int ROW_5_WHITE = 10;
-    private static final int ROW_6_WHITE = 5;
+    private static final int ROW_0_WHITE = 10000;
+    private static final int ROW_1_WHITE = 7;
+    private static final int ROW_2_WHITE = 6;
+    private static final int ROW_3_WHITE = 5;
+    private static final int ROW_4_WHITE = 4;
+    private static final int ROW_5_WHITE = 3;
+    private static final int ROW_6_WHITE = 2;
     private static final int ROW_7_WHITE = 1;
     
     private static final int COL_A = 4;
@@ -54,8 +54,11 @@ public class Evaluateur {
     private static final int COL_G = 3;
     private static final int COL_H = 4;
     
-    private static final int EAT_SCORE = 1000;
-    private static final int BASIC_SCORE = 10;
+    private static final int EAT_SCORE = 8888; // ate ate ate ate xD
+    private static final int DANGER_SCORE = -4444;
+    private static final int BASIC_SCORE = 1;
+    private static final int PUSHER_SCORE = 10;
+    private static final int PUSHY_SCORE = 5;
 	
 	
 	
@@ -183,26 +186,45 @@ public class Evaluateur {
 	 */
 	public int canEat(BoardState state, Move move, int color){
 		int score = 0;
-		
+		int type = 0;
+		int[][] tmpState = state.getState();
 		int toX = move.getToColumn(); 
 		int	toY = move.getToRow();
 		
+		type = tmpState[move.getFromColumn()][move.getFromRow()];
+		
+		if(type%2 == 0){ // alors c'est un pusher
+			type = PUSHER_SCORE; //on attribut plus de valeur au pusher
+		}
+		else{
+			type = PUSHY_SCORE;
+		}
+				
+		
 		//si on peut manger
 		if( state.isMoveEating(toX, toY, color) ){			
-			score = EAT_SCORE*rowMultiplier(toY,color);
+			score = EAT_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);
 			move.setScore(score);
+			//System.out.println("#############"+score+"#############");
 		}
 		//sinon c'est un move normal
 		else{
-			score = BASIC_SCORE*rowMultiplier(toY,color);
+			score = BASIC_SCORE+(rowMultiplier(toY,color)*colMultiplier(toX)*type);
 			move.setScore(score);
 		}
 		
 		return score;
 	}
 	
-	public int isPositionDangerous(BoardState state, Move move, int color){
-		int score = 0;
+	/**
+	 * Détermine si une position est dangereuse, aka si on peut ce faire manger si on va la
+	 * @param state
+	 * @param move
+	 * @param color
+	 * @return
+	 */
+	public boolean isNextPositionDangerous(BoardState state, Move move, int color){
+		
 		int toX = move.getToColumn(); 
 		int	toY = move.getToRow();
 		int[][] coord = state.getState();
@@ -214,54 +236,52 @@ public class Evaluateur {
 			//check si la case destination à un pusher ennemi à gauche(-1)
 			//si oui on risque de ce faire bouffer la, alors inverse le EAT_SCORE
 			if( (toX-1) >=0 && (toY-1) >=0 && coord[toX-1][toY-1] == 2)
-				score = ~EAT_SCORE+1; // = -1000
+				return true;
 			
 			//idem pour la droite(+1)
 			if( (toX+1) <=7 && (toY-1) >=0 &&coord[toX+1][toY-1] == 2)
-				score = ~EAT_SCORE+1;
+				return true;
 			
 			//check s'il la case destination à un pushy ennemi à gauche(-1)
 			if( (toX-1) >=0 && (toY-1) >=0 && coord[toX-1][toY-1] == 1)			
 				//check si le pushy a un pusher
-				if( (toX-2) >=0 && (toY-2) >=0 && coord[toX-2][toY-2] == 2);
-					score = ~EAT_SCORE+1;
+				if( (toX-2) >=0 && (toY-2) >=0 && coord[toX-2][toY-2] == 2)
+					return true;
 					
 			//idem pour la droite(+1)
 			if( (toX+1) <=7 && (toY-1) >=0 && coord[toX+1][toY-1] == 1)			
 				//check si le pushy a un pusher
-				if( (toX+2) <=7 && (toY-2) >=0 && coord[toX+2][toY-2] == 2);
-					score = ~EAT_SCORE+1;		
-				
-		
+				if( (toX+2) <=7 && (toY-2) >=0 && coord[toX+2][toY-2] == 2)
+					return true;
 		}
 		//autrement on est noir
 		else{
 			//check si la case destination à un pusher ennemi à gauche(-1)
 			//si oui on risque de ce faire bouffer la, alors inverse le EAT_SCORE
 			if( (toX-1) >=0 && (toY+1) <=7 && coord[toX-1][toY+1] == 4)
-				score = ~EAT_SCORE+1;
+				return true;
 			
 			//idem pour la droite(+1)
 			if( (toX+1) <=7 && (toY+1) <=7 &&coord[toX+1][toY+1] == 4)
-				score = ~EAT_SCORE+1;
+				return true;
 			
 			//check s'il la case destination à un pushy ennemi à gauche(-1)
 			if( (toX-1) >=0 && (toY+1) <=7 && coord[toX-1][toY+1] == 3)			
 				//check si le pushy a un pusher
-				if( (toX-2) >=0 && (toY+2) <=7 && coord[toX-2][toY+2] == 4);
-					score = ~EAT_SCORE+1;
+				if( (toX-2) >=0 && (toY+2) <=7 && coord[toX-2][toY+2] == 4)
+					return true;
 					
 			//idem pour la droite(+1)
 			if( (toX+1) <=7 && (toY+1) <=7 && coord[toX+1][toY+1] == 3)			
 				//check si le pushy a un pusher
-				if( (toX+2) <=7 && (toY+2) <=7 && coord[toX+2][toY+2] == 4);
-					score = ~EAT_SCORE+1;	
+				if( (toX+2) <=7 && (toY+2) <=7 && coord[toX+2][toY+2] == 4)
+					return true;	
 			
 		
 					
 		}
-		return score;
 		
+		return false;
 	}
 
 	
@@ -306,11 +326,15 @@ public class Evaluateur {
 			return score;
 		}
 		//check si la position du move serait dangereuse
-		score = isPositionDangerous(state, move, color);		
+		if( isNextPositionDangerous(state, move, color) ){
+			
+			return score = DANGER_SCORE;
+		}
 		
 		//sinon il s'agit d'un move normal ou qui mange
-		if(score != 0){
+		if(score == 0){
 			score = canEat(state, move, color);
+			
 			return score;
 		}
 		
@@ -318,10 +342,83 @@ public class Evaluateur {
 	}
 	
 	
-	public int leafValue(BoardState state, Move move){
+	public int leafValue(BoardState state, Move move, int color){
+		int score = 0;
 		
+		score = giveScore(state, move, color);
 		
-		return 0;
+		return score;
+	}
+	
+	/**
+	 * Évalue le realBoardState avec un boardState temporaire.
+	 * Retour positif si on a moins de perte que l'ennemi, Négatif sinon
+	 * @param state
+	 * @return score
+	 */
+	public int evaluateBoardState(BoardState state){
+		int score = 0;
+		int nosValeurAvant = 0;
+		int nosValeurApres = 0;
+		int leurValeurAvant = 0;
+		int leurValeurApres = 0;
+		int nosPerte = 0;
+		int leurPerte = 0;
+		
+		HashMap<Integer, Piece> ourPiecesBefore = (Client.color == Client.WHITE) ? Client.realBoardState.getWhitePieces() : Client.realBoardState.getBlackPieces();
+		HashMap<Integer, Piece> ourPiecesAfter = (Client.color == Client.WHITE) ? state.getWhitePieces() : state.getBlackPieces();
+		HashMap<Integer, Piece> theirPiecesBefore = (Client.color == Client.WHITE) ? Client.realBoardState.getBlackPieces() : Client.realBoardState.getWhitePieces();
+		HashMap<Integer, Piece> theirPiecesAfter = (Client.color == Client.WHITE) ? state.getBlackPieces() : state.getWhitePieces();
+		
+		//calcul nos valeurs de pièces avant et après
+		for(Entry<Integer, Piece> entry1 : ourPiecesBefore.entrySet() ) {
+		    Piece piece = entry1.getValue();
+		    if(piece.getValeur()%2 == 0){
+		    	nosValeurAvant += 100; // donne 100pts si c'est un pusher		    	
+		    }
+		    else{
+		    	nosValeurAvant += 1; // 1pts pour un pushy
+		    }
+		}
+		for(Entry<Integer, Piece> entry2 : ourPiecesAfter.entrySet() ) {
+		    Piece piece = entry2.getValue();
+		    if(piece.getValeur()%2 == 0){
+		    	nosValeurApres += 100; // donne 100pts si c'est un pusher		    	
+		    }
+		    else{
+		    	nosValeurApres += 1; // 1pts pour un pushy
+		    }
+		}
+		
+		//calcul leur valeur de pièce avant et après
+		for(Entry<Integer, Piece> entry3 : theirPiecesBefore.entrySet() ) {
+		    Piece piece = entry3.getValue();
+		    if(piece.getValeur()%2 == 0){
+		    	leurValeurAvant += 100; // donne 100pts si c'est un pusher		    	
+		    }
+		    else{
+		    	leurValeurAvant += 1; // 1pts pour un pushy
+		    }
+		}
+		for(Entry<Integer, Piece> entry4 : theirPiecesAfter.entrySet() ) {
+		    Piece piece = entry4.getValue();
+		    if(piece.getValeur()%2 == 0){
+		    	leurValeurApres += 100; // donne 100pts si c'est un pusher		    	
+		    }
+		    else{
+		    	leurValeurApres += 1; // 1pts pour un pushy
+		    }
+		}
+		
+		nosPerte = nosValeurAvant - nosValeurApres;
+		leurPerte = leurValeurAvant - leurValeurApres;
+		
+		if(nosPerte <= leurPerte)
+			score = 500;
+		else
+			score = -500;
+			
+		return score;
 	}
 	
 	/**

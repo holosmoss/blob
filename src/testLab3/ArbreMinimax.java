@@ -57,7 +57,7 @@ public class ArbreMinimax {
     	if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
     		//TODO what do we return ?
             //Client.print("time out "+alpha);
-    		int leafValue = eval.leafValue(tempState, move);
+    		int leafValue = eval.leafValue(tempState, move, nextColor);
     		return leafValue;
         }
     	
@@ -82,7 +82,7 @@ public class ArbreMinimax {
     		//evaluate current move as a leaf and return its value
     		incrementLeaf = incrementLeaf+1;
     		//System.out.println("----alphaBeta  : Leaf ! "+randomNum);
-    		int leafValue = eval.leafValue(tempState, move);
+    		int leafValue = eval.leafValue(tempState, move, nextColor);
     		//Client.print("END leaf --- "+leafValue);
     		decrementLeaf = decrementLeaf-1;
     		return leafValue;//incrementLeaf;//incrementLeaf;//
