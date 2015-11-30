@@ -253,22 +253,22 @@ public class Evaluateur {
 				//+ 10 pts parceque on aime cette piece
 				score += 10;
 				//TODO this test for null is just weird, what happens when a favored piece is eaten
-				if(favoredIdList.get(movedID) != null){
+				if(ourPieces.get(movedID) != null){
 					if(pieceMoved.getValeur()%2 == 0){
 						//on aime plus les Pushers !
 						score += 10;
 					}
 				}
 			}
-			//Safety first
-			if(isProtected(state, pieceMoved)){
-				//GROS bonus parceque on avance et rest protégé
-				score += 15;
-			}
-			if(isProtecting(state, pieceMoved)){
-				//bonus parceque on prot`ge une de nos pièce
-				score += 10;
-			}
+			//Safety first TODO isProtected  return a nullPointerSometime
+//			if(isProtected(state, pieceMoved)){
+//				//GROS bonus parceque on avance et rest protégé
+//				score += 15;
+//			}
+//			if(isProtecting(state, pieceMoved)){
+//				//bonus parceque on prot`ge une de nos pièce
+//				score += 10;
+//			}
 		}else{
 			//enemy moves
 			//TODO do we keep a favored for them too ? or do we have a mostWanted list or enemyOf the state.
@@ -278,6 +278,7 @@ public class Evaluateur {
 	private boolean isProtected(BoardState state, Piece piece){
 		//TODO verify the states pushers behind + pushy that could move to protect
 		//TODO do we want the pushy protection to be less important or is the rest of our heuristic making this redundant
+		//Client.print("im in!"+piece.getID());
 		int[][] board = state.getState();
 		int ourPusher;
 		int ourPushy;
@@ -293,6 +294,7 @@ public class Evaluateur {
 			rowMod = -1;
 		}
 		int rowBehind = piece.getRow()+rowMod;
+		
 		if(rowBehind >= 0 && rowBehind <= 7){
 			//can be protected
 			//check left
@@ -421,7 +423,7 @@ public class Evaluateur {
 		    if(piece.getValeur()%2 == 0){
 		    	//pusher!
 		    	//TODO do we want the multiplier for unsafe pieces to be 0 so that we avoid moving forward without protection ?
-		    	int safetyMultiplier = (isSafe(boardState, piece))? 2:1;
+		    	int safetyMultiplier = 1//TODO this is bugged(isSafe(boardState, piece))? 2:1;
 		    	score += safetyMultiplier*rowMultiplier(piece.getRow(),Client.color);
 		    }
 		}
