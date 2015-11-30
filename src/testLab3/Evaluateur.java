@@ -37,11 +37,11 @@ public class Evaluateur {
     private static final int ROW_7_BLACK = 10000;
     
     private static final int ROW_0_WHITE = 10000;
-    private static final int ROW_1_WHITE = 8;
-    private static final int ROW_2_WHITE = 7;
-    private static final int ROW_3_WHITE = 6;
-    private static final int ROW_4_WHITE = 5;
-    private static final int ROW_5_WHITE = 3;
+    private static final int ROW_1_WHITE = 4;
+    private static final int ROW_2_WHITE = 4;
+    private static final int ROW_3_WHITE = 3;
+    private static final int ROW_4_WHITE = 3;
+    private static final int ROW_5_WHITE = 2;
     private static final int ROW_6_WHITE = 2;
     private static final int ROW_7_WHITE = 1;
     
@@ -198,7 +198,7 @@ public class Evaluateur {
 	 * En suite la liste est trié
 	 * @param moveList
 	 * @param state
-	 * @param color
+	 * @param color has to be the color of the moves sorted
 	 * @return
 	 */
 	public ArrayList<Move> sortMoveList(ArrayList<Move> moveList, BoardState state, int color){
@@ -214,8 +214,14 @@ public class Evaluateur {
 		}
 
 		//tri la liste care les Move implemente "Comparable"
+		//Client.print("---------");
 		Collections.sort(sortedList);
-
+//		for(int i = 0; i<sortedList.size(); i++){
+//			if(sortedList.get(i).getScore() > 20){
+//				Client.print(i+"  with score of  : "+sortedList.get(i).getScore());
+//			}
+//		}
+//		Client.print("---------");
 		return sortedList;
 	}
 	private ArrayList<Integer> favoredIdList;
@@ -245,7 +251,8 @@ public class Evaluateur {
 		int score = 0;
 		if(color == Client.color){
 			int movedID = move.getPieceID();
-			HashMap<Integer,Piece> ourPieces = (color == Client.WHITE) ? state.getWhitePieces():state.getBlackPieces();
+			HashMap<Integer,Piece> ourPieces = (Client.color == Client.WHITE) ? state.getWhitePieces():state.getBlackPieces();
+		
 			Piece pieceMoved = ourPieces.get(movedID);
 			
 			//Favoritisme pour la gauche
@@ -260,57 +267,63 @@ public class Evaluateur {
 					}
 				}
 			}
-			//Safety first TODO isProtected  return a nullPointerSometime
-//			if(isProtected(state, pieceMoved)){
-//				//GROS bonus parceque on avance et rest protégé
-//				score += 15;
-//			}
-//			if(isProtecting(state, pieceMoved)){
-//				//bonus parceque on prot`ge une de nos pièce
-//				score += 10;
-//			}
+			//TODO do we need a tempState here ? the board received is the temp used to create the child we are sorting
+			BoardState tempState = new BoardState(state,move);
+			//Safety first
+			if(pieceMoved.getValeur()%2 == 0 && isProtected(tempState, move, pieceMoved)){
+				//FOcus sur les pusher
+				//GROS bonus parceque on avance et rest protégé
+				score += 25;
+			}
+			if(isProtecting(tempState,move, pieceMoved)){
+				//bonus parceque on prot`ge une de nos pièce
+				score += 15;
+			}
 		}else{
 			//enemy moves
 			//TODO do we keep a favored for them too ? or do we have a mostWanted list or enemyOf the state.
 		}
 		return score;
 	}
-	private boolean isProtected(BoardState state, Piece piece){
+	private boolean isProtected(BoardState state, Move move, Piece piece){
 		//TODO verify the states pushers behind + pushy that could move to protect
 		//TODO do we want the pushy protection to be less important or is the rest of our heuristic making this redundant
-		//Client.print("im in!"+piece.getID());
+		//Main.print("isProtected : "+piece.getID());
 		int[][] board = state.getState();
 		int ourPusher;
 		int ourPushy;
 		//row behind us
 		int rowMod;
 		if(Client.color == Client.WHITE){
-			ourPusher = 2;
-			ourPushy = 1;
-			rowMod = 1;
-		}else{
 			ourPusher = 4;
 			ourPushy = 3;
+			rowMod = 1;
+		}else{
+			ourPusher = 2;
+			ourPushy = 1;
 			rowMod = -1;
 		}
-		int rowBehind = piece.getRow()+rowMod;
-		
+		int rowBehind = move.getToRow()+rowMod;
+		//Main.print("begin with rowBehind : "+rowBehind);
 		if(rowBehind >= 0 && rowBehind <= 7){
 			//can be protected
 			//check left
-			int leftCol = piece.getCol()-1;
+			int leftCol = move.getToColumn()-1;
 			if(leftCol >= 0){
 				//still on the board
+				
 				if(board[leftCol][rowBehind] == ourPusher ){
+					//Main.print("we have a pusher backing us left");
 					return true;//we have a pusher backing us
 				}
 				if(board[leftCol][rowBehind] == ourPushy){
 					//we have a pushy to the left
-					int secondRowBehind = piece.getRow()+(2*rowMod);
-					int secondColLeft = piece.getCol()-2;
+					int secondRowBehind = move.getToRow()+(2*rowMod);
+					int secondColLeft = move.getToColumn()-2;
 					if(secondColLeft >= 0 && secondRowBehind >= 0 && secondRowBehind <= 7){
 						//still on board
 						if(board[secondColLeft][secondRowBehind] == ourPusher){
+							//Main.print("we have a pushy backing us left");
 							//that pushy can be pushed to protect
 							return true;
 						}
@@ -318,20 +331,21 @@ public class Evaluateur {
 				}
 			}
 			//check right
-			int rightCol = piece.getCol()+1;
+			int rightCol = move.getToColumn()+1;
 			if(rightCol <= 7){
 				//still on the board
-				//still on the board
 				if(board[rightCol][rowBehind] == ourPusher ){
+					//Main.print("we have a pusher backing us right");
 					return true;//we have a pusher backing us
 				}
 				if(board[rightCol][rowBehind] == ourPushy){
 					//we have a pushy to the left
-					int secondRowBehind = piece.getRow()+(2*rowMod);
-					int secondColRight = piece.getCol()+2;
+					int secondRowBehind = move.getToRow()+(2*rowMod);
+					int secondColRight = move.getToColumn()+2;
 					if(secondColRight <= 7 && secondColRight >= 0 && secondRowBehind <= 7){
 						//still on board
 						if(board[secondColRight][secondRowBehind] == ourPusher){
+							//Main.print("we have a pushy backing us left");
 							//that pushy can be pushed to protect
 							return true;
 						}
@@ -343,8 +357,70 @@ public class Evaluateur {
 		return false;
 	}
 	
-	private boolean isProtecting(BoardState state, Piece piece){
-		//TODO check state if we have pieces at our protectable diags
+	private boolean isProtecting(BoardState state, Move move, Piece piece){
+		//TODO we might want a diff btwn Pusher defense and Pushy defense
+		// check state if we have pieces at our protectable diags
+		
+		int[][] board = state.getState();
+		int ourPusher;
+		int ourPushy;
+		//row forward us
+		int rowMod;
+		if(Client.color == Client.WHITE){
+			ourPusher = 4;
+			ourPushy = 3;
+			rowMod = -1;
+		}else{
+			ourPusher = 2;
+			ourPushy = 1;
+			rowMod = 1;
+		}
+	    int rowInFront = move.getToRow()+rowMod;
+		if(rowInFront >= 0 && rowInFront <= 7){
+			//check left
+			int leftCol = move.getToColumn()-1;
+
+			if(leftCol >= 0){
+				//still on board
+				if(board[leftCol][rowInFront] == ourPusher || board[leftCol][rowInFront] == ourPushy ){
+					if( piece.getValeur() == ourPushy){
+						int oppositeCol = move.getToColumn()+1;
+						int rowBehind = move.getToRow()-rowMod;
+						if(oppositeCol <= 7 && rowBehind >= 0 && rowBehind <=7){
+							if(board[oppositeCol][rowBehind] == ourPusher){
+								return true;//the pushy could be pushed to protect
+							}else{
+								return false;//the pushy is impotent
+							}
+						}
+					}
+					return true;//we protect a piece to the left
+				}
+			}
+			//check right
+			int rightCol = move.getToColumn()+1;
+
+			if(rightCol <= 7){
+				//still on board
+				if(board[rightCol][rowInFront] == ourPusher || board[rightCol][rowInFront] == ourPushy ){
+					
+					if( piece.getValeur() == ourPushy){
+						
+						int opppositeCol = move.getToColumn()-1;
+						int rowBehind = move.getToRow()-rowMod;
+						if(opppositeCol >= 0 && rowBehind >= 0 && rowBehind <=7){
+							if(board[opppositeCol][rowBehind] == ourPusher){
+								return true;//the pushy could be pushed to protect
+							}else{
+								return false;//the pushy is impotent
+							}
+						}
+					}
+					
+					return true;//we protect a piece to the left
+				}
+			}
+		}
 		return false;
 	}
 	private boolean isSafe(BoardState state, Piece piece){
@@ -406,9 +482,12 @@ public class Evaluateur {
 			}
 		}
 		//return false if we can be eaten and have no protection
-		if(canBeEaten && !isProtected(state, piece)){
+		//TODO find a way to feed a move to && !isProtected(state, piece)
+		if(canBeEaten ){
+			//Client.print("UNSAFE");
 			return false;
 		}else{
+			//Client.print("SAFE");
 			return true;
 		} //TIEIT
 	}
@@ -423,7 +502,7 @@ public class Evaluateur {
 		    if(piece.getValeur()%2 == 0){
 		    	//pusher!
 		    	//TODO do we want the multiplier for unsafe pieces to be 0 so that we avoid moving forward without protection ?
-		    	int safetyMultiplier = 1;//TODO this is bugged(isSafe(boardState, piece))? 2:1;
+		    	int safetyMultiplier = (isSafe(boardState, piece))? 2:1;
 		    	score += safetyMultiplier*rowMultiplier(piece.getRow(),Client.color);
 		    }
 		}

@@ -12,7 +12,7 @@ public class ArbreMinimax {
 	private Evaluateur eval;
 	private long startTime;
 	
-	static final int MAX_DEPTH = 9; //profondeur de recherche max plus c'est grand
+	static final int MAX_DEPTH = 1;//9; //profondeur de recherche max plus c'est grand
 									//plus c'est précis, mais prendra plus de temps
     static final int TEMPS_MAX = 4900; // temps max en millisecondes
     //TODO this is juste for test
@@ -48,7 +48,7 @@ public class ArbreMinimax {
     		maxNode = false;
     		nextColor = Client.color;
     	}
-    	Client.print("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode+"------------profondeur : "+depth);
+    	//Client.print("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode+"------------profondeur : "+depth);
     	//Client.print("the received state : ");
     	//lastState.affichageGrille();
     	//generate the new BoardState for our move : and generate the moves from that boardState.
@@ -93,7 +93,8 @@ public class ArbreMinimax {
     	ArrayList<Move> childs = gene.generateurMouvement(tempState,nextColor);
     	
     	//attribut les scores des moves et les tris ICI
-    	childs = this.eval.sortMoveList(childs, tempState, Client.color);
+    	//nextColor indique que la prochaine generation change de couleur
+    	childs = this.eval.sortMoveList(childs, tempState, nextColor);
     	
     	
     	if(maxNode){
@@ -153,6 +154,7 @@ public class ArbreMinimax {
 		
 		//tri la list selon le score de chaque move, 
 		//c'est ici qu'on attribut un score à nos move
+		//on leur indique que cest nos move par la couleur client
 		possibleMoves = this.eval.sortMoveList(possibleMoves, currentState, Client.color);
 		
 		for(Move move : possibleMoves){
