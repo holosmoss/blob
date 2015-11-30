@@ -14,7 +14,7 @@ public class ArbreMinimax {
 	
 	static final int MAX_DEPTH = 9; //profondeur de recherche max plus c'est grand
 									//plus c'est précis, mais prendra plus de temps
-    static final int TEMPS_MAX = 4900; // temps max en millisecondes
+    static final int TEMPS_MAX = 1900; // temps max en millisecondes
     //TODO this is juste for test
     private int incrementLeaf = 1;
     private int decrementLeaf = Integer.MAX_VALUE;
@@ -48,7 +48,7 @@ public class ArbreMinimax {
     		maxNode = false;
     		nextColor = Client.color;
     	}
-    	Client.print("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode+"------------profondeur : "+depth);
+    	//Client.print("----alphaBeta  : a="+alpha+" b="+beta+" is max "+maxNode+"------------profondeur : "+depth);
     	//Client.print("the received state : ");
     	//lastState.affichageGrille();
     	//generate the new BoardState for our move : and generate the moves from that boardState.
@@ -57,7 +57,7 @@ public class ArbreMinimax {
     	if ( System.currentTimeMillis() - startTime > TEMPS_MAX ) {
     		//TODO what do we return ?
             //Client.print("time out "+alpha);
-    		int leafValue = eval.leafValue(tempState);
+    		int leafValue = eval.leafValue(tempState, move);
     		return leafValue;
         }
     	
@@ -82,7 +82,7 @@ public class ArbreMinimax {
     		//evaluate current move as a leaf and return its value
     		incrementLeaf = incrementLeaf+1;
     		//System.out.println("----alphaBeta  : Leaf ! "+randomNum);
-    		int leafValue = eval.leafValue(tempState);
+    		int leafValue = eval.leafValue(tempState, move);
     		//Client.print("END leaf --- "+leafValue);
     		decrementLeaf = decrementLeaf-1;
     		return leafValue;//incrementLeaf;//incrementLeaf;//
@@ -93,7 +93,7 @@ public class ArbreMinimax {
     	ArrayList<Move> childs = gene.generateurMouvement(tempState,nextColor);
     	
     	//attribut les scores des moves et les tris ICI
-    	childs = this.eval.sortMoveList(childs, tempState, Client.color);
+    	childs = this.eval.sortMoveList(childs, tempState, nextColor);
     	
     	
     	if(maxNode){
@@ -154,6 +154,7 @@ public class ArbreMinimax {
 		//tri la list selon le score de chaque move, 
 		//c'est ici qu'on attribut un score à nos move
 		possibleMoves = this.eval.sortMoveList(possibleMoves, currentState, Client.color);
+		
 		
 		for(Move move : possibleMoves){
 			//Loop the 1st gen moves to find the one which result in the best score

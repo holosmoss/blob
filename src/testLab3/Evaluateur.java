@@ -28,22 +28,31 @@ public class Evaluateur {
 	
 	//utilise ROW_X_WHITE
     private static final int ROW_0_BLACK = 1;
-    private static final int ROW_1_BLACK = 1;
-    private static final int ROW_2_BLACK = 1;
-    private static final int ROW_3_BLACK = 5;
-    private static final int ROW_4_BLACK = 10;
-    private static final int ROW_5_BLACK = 100;
-    private static final int ROW_6_BLACK = 1000;
-    private static final int ROW_7_BLACK = 10000;
+    private static final int ROW_1_BLACK = 5;
+    private static final int ROW_2_BLACK = 10;
+    private static final int ROW_3_BLACK = 25;
+    private static final int ROW_4_BLACK = 50;
+    private static final int ROW_5_BLACK = 125;
+    private static final int ROW_6_BLACK = 250;
+    private static final int ROW_7_BLACK = 500;
     
-    private static final int ROW_0_WHITE = 10000;
-    private static final int ROW_1_WHITE = 1000;
-    private static final int ROW_2_WHITE = 100;
-    private static final int ROW_3_WHITE = 10;
-    private static final int ROW_4_WHITE = 5;
-    private static final int ROW_5_WHITE = 1;
-    private static final int ROW_6_WHITE = 1;
+    private static final int ROW_0_WHITE = 500;
+    private static final int ROW_1_WHITE = 250;
+    private static final int ROW_2_WHITE = 125;
+    private static final int ROW_3_WHITE = 50;
+    private static final int ROW_4_WHITE = 25;
+    private static final int ROW_5_WHITE = 10;
+    private static final int ROW_6_WHITE = 5;
     private static final int ROW_7_WHITE = 1;
+    
+    private static final int COL_A = 4;
+    private static final int COL_B = 3;
+    private static final int COL_C = 2;
+    private static final int COL_D = 2;
+    private static final int COL_E = 2;
+    private static final int COL_F = 2;
+    private static final int COL_G = 3;
+    private static final int COL_H = 4;
     
     private static final int EAT_SCORE = 1000;
     private static final int BASIC_SCORE = 10;
@@ -191,6 +200,69 @@ public class Evaluateur {
 		
 		return score;
 	}
+	
+	public int isPositionDangerous(BoardState state, Move move, int color){
+		int score = 0;
+		int toX = move.getToColumn(); 
+		int	toY = move.getToRow();
+		int[][] coord = state.getState();
+		
+		
+		//si on est blanc
+		if(color == WHITE){
+			
+			//check si la case destination à un pusher ennemi à gauche(-1)
+			//si oui on risque de ce faire bouffer la, alors inverse le EAT_SCORE
+			if( (toX-1) >=0 && (toY-1) >=0 && coord[toX-1][toY-1] == 2)
+				score = ~EAT_SCORE+1; // = -1000
+			
+			//idem pour la droite(+1)
+			if( (toX+1) <=7 && (toY-1) >=0 &&coord[toX+1][toY-1] == 2)
+				score = ~EAT_SCORE+1;
+			
+			//check s'il la case destination à un pushy ennemi à gauche(-1)
+			if( (toX-1) >=0 && (toY-1) >=0 && coord[toX-1][toY-1] == 1)			
+				//check si le pushy a un pusher
+				if( (toX-2) >=0 && (toY-2) >=0 && coord[toX-2][toY-2] == 2);
+					score = ~EAT_SCORE+1;
+					
+			//idem pour la droite(+1)
+			if( (toX+1) <=7 && (toY-1) >=0 && coord[toX+1][toY-1] == 1)			
+				//check si le pushy a un pusher
+				if( (toX+2) <=7 && (toY-2) >=0 && coord[toX+2][toY-2] == 2);
+					score = ~EAT_SCORE+1;		
+				
+		
+		}
+		//autrement on est noir
+		else{
+			//check si la case destination à un pusher ennemi à gauche(-1)
+			//si oui on risque de ce faire bouffer la, alors inverse le EAT_SCORE
+			if( (toX-1) >=0 && (toY+1) <=7 && coord[toX-1][toY+1] == 4)
+				score = ~EAT_SCORE+1;
+			
+			//idem pour la droite(+1)
+			if( (toX+1) <=7 && (toY+1) <=7 &&coord[toX+1][toY+1] == 4)
+				score = ~EAT_SCORE+1;
+			
+			//check s'il la case destination à un pushy ennemi à gauche(-1)
+			if( (toX-1) >=0 && (toY+1) <=7 && coord[toX-1][toY+1] == 3)			
+				//check si le pushy a un pusher
+				if( (toX-2) >=0 && (toY+2) <=7 && coord[toX-2][toY+2] == 4);
+					score = ~EAT_SCORE+1;
+					
+			//idem pour la droite(+1)
+			if( (toX+1) <=7 && (toY+1) <=7 && coord[toX+1][toY+1] == 3)			
+				//check si le pushy a un pusher
+				if( (toX+2) <=7 && (toY+2) <=7 && coord[toX+2][toY+2] == 4);
+					score = ~EAT_SCORE+1;	
+			
+		
+					
+		}
+		return score;
+		
+	}
 
 	
 	/**
@@ -218,6 +290,13 @@ public class Evaluateur {
 		return sortedList;
 	}
 	
+	/**
+	 * Méthode qui calcule le score d'un move par rapport à l'état du board
+	 * @param state
+	 * @param move
+	 * @param color
+	 * @return
+	 */
 	private int giveScore(BoardState state, Move move, int color){
 		
 		int score = isGameFinish(state, color);
@@ -226,17 +305,20 @@ public class Evaluateur {
 		if( score != 0 ){
 			return score;
 		}
+		//check si la position du move serait dangereuse
+		score = isPositionDangerous(state, move, color);		
+		
 		//sinon il s'agit d'un move normal ou qui mange
-		else{
+		if(score != 0){
 			score = canEat(state, move, color);
 			return score;
 		}
 		
-		
+		return score;
 	}
 	
 	
-	public int leafValue(BoardState boardState){
+	public int leafValue(BoardState state, Move move){
 		
 		
 		return 0;
@@ -291,6 +373,29 @@ public class Evaluateur {
                 default:
                     return 1;
             }
+        }
+    }
+	
+	private int colMultiplier(int col){
+        switch (col){
+            case 0:
+                return COL_A;
+            case 1:
+                return COL_B;
+            case 2:
+                return COL_C;
+            case 3:
+                return COL_D;
+            case 4:
+                return COL_E;
+            case 5:
+                return COL_F;
+            case 6:
+                return COL_G;
+            case 7:
+                return COL_H;
+            default:
+                return 1;
         }
     }
 
