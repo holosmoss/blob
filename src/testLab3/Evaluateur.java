@@ -423,7 +423,7 @@ public class Evaluateur {
 		    if(piece.getValeur()%2 == 0){
 		    	//pusher!
 		    	//TODO do we want the multiplier for unsafe pieces to be 0 so that we avoid moving forward without protection ?
-		    	int safetyMultiplier = 1//TODO this is bugged(isSafe(boardState, piece))? 2:1;
+		    	int safetyMultiplier = 1;//TODO this is bugged(isSafe(boardState, piece))? 2:1;
 		    	score += safetyMultiplier*rowMultiplier(piece.getRow(),Client.color);
 		    }
 		}
